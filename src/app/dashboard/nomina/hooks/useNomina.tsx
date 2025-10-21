@@ -3,24 +3,70 @@ import { useEffect, useState } from 'react'
 
 export const useNomina = () => {
   const [openModal, setOpenModal] = useState(false);
-
   const [nomina, setNomina] = useState<NominaData[] | null>(null);
+
+  const [mes, setMes] = useState<number | null>(null);
+  const [anio, setAnio] = useState<number|null>(null);
+  const [departamento, setDepartamento] = useState<string | null>(null);
+  const [estado, setEstado] = useState<string | null>(null);
+  const [selectedNomina, setSelectedNomina] = useState<any>(null);
+  const [empleadoNombre, setEmpleadoNombre] = useState<string>("");
+  const [empleadoApellido, setEmpleadoApellido] = useState<string>("");
+  const [totalItems, setTotalItems] = useState<number>(0);
+
+  const [filtro, setFiltro] = useState<boolean>(false);
+
+  
+   const [page, setPage] = useState(1);
+  const size = 5;
+  // const totalItemsMostrar =  5;
+
+  // console.log(page);
+  // console.log(totalItems);
+
+
+  const handleChangeMes = (event: any) => {
+      setMes(event.target.value);
+      setFiltro(true);
+  };
+  const handleChangeAnio = (event: any) => {
+    setAnio(event.target.value);
+    setFiltro(true);
+  }
+  const handleChangeDepartamento = (event: any) => {
+    setDepartamento(event.target.value);
+    setFiltro(true);
+  }
+  const handleChangeEstado = (event: any) => {
+    setEstado(event.target.value);
+    setFiltro(true);
+  }
+  function handleResetFilters() {
+    setMes(null);
+    setAnio(null);
+    setDepartamento(null);
+    setEstado(null);
+    setEmpleadoNombre("");
+    setEmpleadoApellido("");
+    setFiltro(false);
+  }
 
   const consumirServicio = async () => {
       try {
         const response = await postListaNominaService({
-          periodoAnio: null,
-          periodoMes: null,
-          nominaEstado: null,
-          empleadoNombre: null,
-          empleadoApellido: null,
-          departamentoCodigo: null,
-          pageNumber: 1,
-          pageSize: 10
+          periodoAnio: anio,
+          periodoMes: mes,
+          nominaEstado: estado,
+          empleadoNombre: empleadoNombre,
+          empleadoApellido: empleadoApellido,
+          departamentoCodigo: departamento,
+          pageNumber: page,
+          pageSize: 5
         });
 
         if (response?.data) {
-          setNomina(response.data); 
+          setNomina(response.data);
+          setTotalItems(response.TotalRows); 
         } else {
           console.error('Error: No se recibió data en la respuesta');
         }
@@ -76,6 +122,10 @@ export const useNomina = () => {
 
   useEffect(() => {
     consumirServicio();
+  },[anio,mes, departamento, estado,empleadoNombre, empleadoApellido,page]);
+
+  useEffect(() => {
+    consumirServicio();
     obtenerAnios();
     obtenerMeses();
     obtenerDepartamentos();
@@ -87,6 +137,26 @@ export const useNomina = () => {
     nomina,
     anios,
     meses,
-    departamentos
+    departamentos,
+    mes,
+    anio,
+    departamento,
+    estado,
+    handleChangeAnio,
+    handleChangeMes,
+    handleChangeDepartamento,
+    handleChangeEstado,
+    handleResetFilters,
+    empleadoNombre,
+    setSelectedNomina,
+    selectedNomina,
+    empleadoApellido, 
+    setEmpleadoApellido,
+    setEmpleadoNombre,
+    filtro,
+    size,
+    page,
+    totalItems,
+    setPage
   }
 }

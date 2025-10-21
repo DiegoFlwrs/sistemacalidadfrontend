@@ -32,6 +32,7 @@ export interface NominaResponse {
     statusCode: number;
     success: string;
     message: string;
+    TotalRows: number;
     data : NominaData[];
 }
 
@@ -72,6 +73,7 @@ export interface AniosResponse {
     statusCode: number;
     success: string;
     message: string;
+    
     data : AnioData[];
 }
 

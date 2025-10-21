@@ -10,28 +10,52 @@ import { Dropdown } from "@/components/Dropdown";
 import { TableNominaDetail } from "./table/TableNominaDetail";
 import { getLabel } from "@/utils/helpers";
 import { ESTADOS_NOMINA, MESES } from "@/utils/constanst";
+import RestartAltIcon from '@mui/icons-material/RestartAlt';
+import Pagination from "@/components/Pagination";
 
 export default function NominaPage() {
-  const { openModal, setOpenModal, nomina, anios, meses, departamentos } = useNomina();
-
-  const OPTIONS_MESES = [
-    { value: 1, label: "Enero" },
-    { value: 2, label: "Febrero" },
-    { value: 3, label: "Marzo" },
-  ];
-
-  const [mes, setMes] = useState("");
-  const [anio, setAnio] = useState<number[]>([]);
-
-  const handleChangeMes = (event: any) => setMes(event.target.value);
-  const handleChangeAnio = (event: any) => setAnio(event.target.value);
-
-  const [selectedNomina, setSelectedNomina] = useState<any>(null);
-  const [empleadoNombre, setEmpleadoNombre] = useState<any>(null);
+  const {
+    openModal,
+    setOpenModal,
+    nomina,
+    anios,
+    meses,
+    departamentos,
+    selectedNomina,
+    setSelectedNomina,
+    mes,
+    anio,
+    departamento,
+    estado,
+    handleChangeAnio,
+    handleChangeMes,
+    handleChangeDepartamento,
+    handleChangeEstado,
+    handleResetFilters,
+    empleadoApellido, 
+    setEmpleadoApellido,
+    setEmpleadoNombre,
+    empleadoNombre,
+    filtro,
+    size,
+    page,
+    totalItems,
+    setPage
+  } = useNomina();
 
   return (
     <div className="pt-6">
       <Paper elevation={2} sx={{ p: 3, mb: 4 }}>
+        <Typography fontSize={20} fontWeight={600} mb={3}>
+          Opciones de Nómina
+        </Typography>
+
+        <div className="flex my-5 gap-3">
+          <button className="bg-orange-600 text-white p-2 rounded">Nueva Nómina</button>
+          <button className="bg-blue-600 text-white p-2 rounded">Editar Nómina</button>
+          <button className="bg-green-600 text-white p-2 rounded">Generar Reporte Nómina</button>
+        </div>
+
         <Typography fontSize={20} fontWeight={600} mb={3}>
           Filtros de búsqueda
         </Typography>
@@ -56,7 +80,7 @@ export default function NominaPage() {
               onChange={handleChangeMes}
               data={meses.map((m) => ({
                 value: m,
-                label: getLabel(MESES, m) ,  
+                label: getLabel(MESES, m),
               }))}
               placeholder="Seleccionar Mes"
               borderRadius="10px"
@@ -65,11 +89,11 @@ export default function NominaPage() {
           </div>
           <div className="w-[20%]">
             <Dropdown
-              value={mes}
-              onChange={handleChangeMes}
+              value={departamento}
+              onChange={handleChangeDepartamento}
               data={departamentos.map((d) => ({
                 value: d.DepartamentoCodigo,
-                label: d.DepartamentoNombre,  
+                label: d.DepartamentoNombre,
               }))}
               placeholder="Seleccionar Departamento"
               borderRadius="10px"
@@ -78,16 +102,24 @@ export default function NominaPage() {
           </div>
           <div className="w-[20%]">
             <Dropdown
-              value={mes}
-              onChange={handleChangeMes}
+              value={estado}
+              onChange={handleChangeEstado}
               data={ESTADOS_NOMINA.map((e) => ({
                 value: e.value,
-                label: e.label,  
+                label: e.label,
               }))}
               placeholder="Seleccionar Estado"
               borderRadius="10px"
               borderColor="#d5d7da"
             />
+          </div>
+          <div>
+            <button
+              className={filtro ? "text-red-800" : "text-gray-500"}
+              onClick={handleResetFilters}
+            >
+              <RestartAltIcon />
+            </button>
           </div>
         </div>
         <div className="flex mt-5 gap-3">
@@ -103,8 +135,8 @@ export default function NominaPage() {
           <div className="w-[20%]">
             <TextField
               label="Apellido Empleado"
-              value={empleadoNombre}
-              onChange={(e) => setEmpleadoNombre(e.target.value)}
+              value={empleadoApellido}
+              onChange={(e) => setEmpleadoApellido(e.target.value)}
               size="small"
               fullWidth
             />
@@ -116,6 +148,12 @@ export default function NominaPage() {
         nomina={nomina ?? []}
         setOpenModal={setOpenModal}
         setSelectedNomina={setSelectedNomina}
+      />
+      <Pagination
+        page={page}
+        size={size}
+        totalItems={totalItems}
+        onPageChange={setPage}
       />
 
       <ModalComponent open={openModal} setOpen={setOpenModal} width={520}>
