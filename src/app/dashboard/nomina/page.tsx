@@ -2,7 +2,7 @@
 // @ts-nocheck
 "use client";
 import { ModalComponent } from "@/components/Modal";
-import { FormNomina } from "./form/formNomina";
+import { DetalleNomina } from "./form/detalleNomina";
 import { useNomina } from "./hooks/useNomina";
 import { Paper, Typography, TextField } from "@mui/material";
 import { useState } from "react";
@@ -12,6 +12,7 @@ import { getLabel } from "@/utils/helpers";
 import { ESTADOS_NOMINA, MESES } from "@/utils/constanst";
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import Pagination from "@/components/Pagination";
+import { FormNomina } from "./form/formNomina";
 
 export default function NominaPage() {
   const {
@@ -40,7 +41,11 @@ export default function NominaPage() {
     size,
     page,
     totalItems,
-    setPage
+    setPage,
+    openModalForm, 
+    setOpenModalForm,
+    isEdit, 
+    setIsEdit
   } = useNomina();
 
   return (
@@ -51,9 +56,19 @@ export default function NominaPage() {
         </Typography>
 
         <div className="flex my-5 gap-3">
-          <button className="bg-orange-600 text-white p-2 rounded">Nueva Nómina</button>
-          <button className="bg-blue-600 text-white p-2 rounded">Editar Nómina</button>
-          <button className="bg-green-600 text-white p-2 rounded">Generar Reporte Nómina</button>
+          <button className="bg-orange-600 text-white p-2 rounded"
+          onClick={() => {
+            setIsEdit(false);
+            setOpenModalForm(true)
+          }}
+          >Nueva Nómina</button>
+          <button className="bg-blue-600 text-white p-2 rounded"
+          onClick={() => {
+            setIsEdit(true);
+            setOpenModalForm(true)
+          }}
+          >Editar Nómina</button>
+          {/* <button className="bg-green-600 text-white p-2 rounded">Generar Reporte Nómina</button> */}
         </div>
 
         <Typography fontSize={20} fontWeight={600} mb={3}>
@@ -155,9 +170,12 @@ export default function NominaPage() {
         totalItems={totalItems}
         onPageChange={setPage}
       />
-
       <ModalComponent open={openModal} setOpen={setOpenModal} width={520}>
-        <FormNomina data={selectedNomina} />
+        <DetalleNomina data={selectedNomina} />
+      </ModalComponent>
+
+      <ModalComponent open={openModalForm} setOpen={setOpenModalForm} width={520}>
+        <FormNomina isEdit={isEdit} />
       </ModalComponent>
     </div>
   );

@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 
 export const useNomina = () => {
   const [openModal, setOpenModal] = useState(false);
+  const [openModalForm, setOpenModalForm] = useState(false);
   const [nomina, setNomina] = useState<NominaData[] | null>(null);
 
   const [mes, setMes] = useState<number | null>(null);
@@ -19,10 +20,8 @@ export const useNomina = () => {
   
    const [page, setPage] = useState(1);
   const size = 5;
-  // const totalItemsMostrar =  5;
 
-  // console.log(page);
-  // console.log(totalItems);
+  const [isEdit, setIsEdit] = useState(false);
 
 
   const handleChangeMes = (event: any) => {
@@ -157,6 +156,10 @@ export const useNomina = () => {
     size,
     page,
     totalItems,
-    setPage
+    setPage,
+    openModalForm, 
+    setOpenModalForm,
+    isEdit, 
+    setIsEdit
   }
 }
