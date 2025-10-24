@@ -45,7 +45,10 @@ export default function NominaPage() {
     openModalForm, 
     setOpenModalForm,
     isEdit, 
-    setIsEdit
+    setIsEdit,
+    contratos,
+    periodo,
+    AgregarNominaServicio
   } = useNomina();
 
   return (
@@ -174,8 +177,8 @@ export default function NominaPage() {
         <DetalleNomina data={selectedNomina} />
       </ModalComponent>
 
-      <ModalComponent open={openModalForm} setOpen={setOpenModalForm} width={520}>
-        <FormNomina isEdit={isEdit} />
+      <ModalComponent open={openModalForm} setOpen={setOpenModalForm} width={480}>
+        <FormNomina isEdit={isEdit} setOpenModalForm= {setOpenModalForm} contratos={contratos} periodo={periodo} AgregarNominaServicio={AgregarNominaServicio} />
       </ModalComponent>
     </div>
   );

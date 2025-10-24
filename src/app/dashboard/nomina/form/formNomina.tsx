@@ -2,197 +2,153 @@ import React, { useState } from "react";
 import { Typography } from "@mui/material";
 import { Dropdown } from "@/components/Dropdown";
 
-interface FormNominaProps { 
-    isEdit: boolean;
- }
+interface FormNominaProps {
+  isEdit: boolean;
+  setOpenModalForm: (open: boolean) => void;
+  contratos: any[];
+  periodo: any[];
+   AgregarNominaServicio: (
+    NominaCodigo: string,
+    PeriodoCodigo: string,
+    ContratoCodigo: string,
+    NominaHorasExtras: number,
+    NominaBonificacion: number,
+    NominaDescuentos: number
+  ) => Promise<void>;
+}
 
-export const FormNomina = ({ isEdit }: FormNominaProps) => {
-  const [anio, setAnio] = useState("");
-  const [mes, setMes] = useState("");
+export const FormNomina = ({ isEdit, setOpenModalForm, contratos, periodo, AgregarNominaServicio }: FormNominaProps) => {
+  const [horasExtras, setHorasExtras] = useState<number>();
+  const [bonificacion, setBonificacion] = useState<number>();
+  const [descuentos, setDescuentos] = useState<number>();
+  const [periodoFiltro, setPeriodoFiltro] = useState<any>(null);
+  const [contrato, setContrato] = useState<any>(null);
+  const [codigoNomina, setCodigoNomina] = useState("");
 
-  const handleChangeAnio = (e: any) => setAnio(e.value);
-  const handleChangeMes = (e: any) => setMes(e.value);
+  
 
-  const anios = [2023, 2024, 2025, 2026];
-  const meses = [
-    "Enero",
-    "Febrero",
-    "Marzo",
-    "Abril",
-    "Mayo",
-    "Junio",
-    "Julio",
-    "Agosto",
-    "Septiembre",
-    "Octubre",
-    "Noviembre",
-    "Diciembre",
-  ];
+  const handleChangePeriodo = (event: any) => setPeriodoFiltro(event.target.value);
+  const handleChangeContrato = (event: any) => setContrato(event.target.value);
+
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    AgregarNominaServicio(
+      codigoNomina,
+      periodoFiltro,
+      contrato,
+      horasExtras!,
+      bonificacion!,
+      descuentos!
+    )
+    setOpenModalForm(false);
+  }
 
   return (
-    <div className="flex justify-center mt-2">
-      <div className="bg-white shadow-lg rounded-xl p-6 w-[450px]">
+    <div className="flex justify-center items-center">
+      <div className="rounded-2xl w-[400px]">
         <Typography
-          fontSize={20}
-          fontWeight={600}
-          mb={3}
-          mt={-3}
-          className="text-center"
+          variant="h6"
+          className="text-center font-semibold text-gray-800 mb-6"
         >
-          {isEdit ? "Editar Nómina" : "Registrar Nómina"}
+          {isEdit ? "Editar Nómina" : "Insertar Nómina"}
         </Typography>
 
-        {/* Código de Nómina */}
-        <div className="flex items-center justify-between mb-3">
-          <label className="font-medium">Código de Nómina:</label>
-          <input
-            type="text"
-            value="085"
-            className="border border-gray-300 rounded px-2 py-1 w-[50%]"
-            readOnly
-          />
-        </div>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Código de Nómina
+            </label>
+             <input
+              type="text"
+              value={codigoNomina}
+              onChange={(e) => setCodigoNomina(e.target.value)}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
+          </div>
 
-        {/* Periodo de Nómina */}
-        <div className="flex items-center justify-between mb-3">
-          <label className="font-medium">Periodo de Nómina:</label>
-          <div className="flex gap-2 w-[50%]">
-            <div className="w-[50%]">
+          {/* Periodo */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Periodo (Año - Mes)
+            </label>
+            <div className="flex gap-2">
               <Dropdown
-                value={anio}
-                onChange={handleChangeAnio}
-                data={anios.map((a) => ({
-                  value: a,
-                  label: a,
-                }))}
-                placeholder="Año"
-                borderRadius="10px"
-                borderColor="#d5d7da"
-              />
-            </div>
-            <div className="w-[50%]">
-              <Dropdown
-                value={mes}
-                onChange={handleChangeMes}
-                data={meses.map((m) => ({
-                  value: m,
-                  label: m,
-                }))}
-                placeholder="Mes"
+                value={periodoFiltro}
+                onChange={handleChangePeriodo}
+                data={periodo.map((p) => ({ value: p.PeriodoCodigo, label: p.PeriodoDescripcion }))}
+                placeholder="Periodo"
                 borderRadius="10px"
                 borderColor="#d5d7da"
               />
             </div>
           </div>
-        </div>
 
-        {/* Contrato del Empleado */}
-        <div className="flex items-center justify-between mb-4">
-          <label className="font-medium">Contrato del Empleado:</label>
-          <div className="w-[50%]">
+          {/* Contrato */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Contrato del Empleado
+            </label>
             <Dropdown
-              value=""
-              onChange={() => {}}
-              data={[
-                { value: "1", label: "Empleado 1" },
-                { value: "2", label: "Empleado 2" },
-              ]}
-              placeholder="Seleccione un empleado"
+              value={contrato}
+              onChange={handleChangeContrato}
+              data={contratos.map((e) => ({ value: e.ContratoCodigo, label: e.EmpleadoDescripcion }))}
+              placeholder="Seleccione contrato"
               borderRadius="10px"
               borderColor="#d5d7da"
             />
           </div>
-        </div>
 
-        <hr className="my-4 border-gray-300" />
-
-        {/* Detalle del Pago */}
-        <p className="font-semibold mb-2 text-left">Detalle del Pago:</p>
-
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <label>Sueldo Básico:</label>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Horas Extras
+            </label>
             <input
               type="number"
-              defaultValue="0.00"
-              className="border border-gray-300 rounded px-2 py-1 w-[50%] text-right"
+              value={horasExtras}
+              onChange={(e) => setHorasExtras(Number(e.target.value))}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
             />
           </div>
 
-          <div className="flex items-center justify-between">
-            <label>Horas Extras:</label>
+          {/* Bonificación */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Bonificación (S/)
+            </label>
             <input
               type="number"
-              defaultValue="0"
-              className="border border-gray-300 rounded px-2 py-1 w-[50%] text-right"
+              value={bonificacion}
+              onChange={(e) => setBonificacion(Number(e.target.value))}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
             />
           </div>
 
-          <div className="flex items-center justify-between">
-            <label>Bonificación:</label>
+          {/* Descuentos */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Descuentos (S/)
+            </label>
             <input
               type="number"
-              defaultValue="0.00"
-              className="border border-gray-300 rounded px-2 py-1 w-[50%] text-right"
+              value={descuentos}
+              onChange={(e) => setDescuentos(Number(e.target.value))}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
             />
           </div>
 
-          <div className="flex items-center justify-between">
-            <label>Otros Descuentos:</label>
-            <input
-              type="number"
-              defaultValue="0.00"
-              className="border border-gray-300 rounded px-2 py-1 w-[50%] text-right"
-            />
-          </div>
-        </div>
-
-        <hr className="my-4 border-gray-300" />
-
-        {/* Resumen Calculado */}
-        <p className="font-semibold mb-2 text-left">Resumen Calculado:</p>
-
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <label>Total Ingresos:</label>
-            <input
-              type="text"
-              value="0.00"
-              readOnly
-              className="border border-gray-300 rounded px-2 py-1 w-[50%] text-right bg-gray-100"
-            />
-          </div>
-
-          <div className="flex items-center justify-between">
-            <label>Total Descuentos:</label>
-            <input
-              type="text"
-              value="0.00"
-              readOnly
-              className="border border-gray-300 rounded px-2 py-1 w-[50%] text-right bg-gray-100"
-            />
-          </div>
-
-          <div className="flex items-center justify-between">
-            <label>Sueldo Neto:</label>
-            <input
-              type="text"
-              value="0.00"
-              readOnly
-              className="border border-gray-300 rounded px-2 py-1 w-[50%] text-right bg-gray-100"
-            />
-          </div>
-        </div>
-
-        {/* Botones */}
-        <div className="flex justify-center gap-3 mt-5">
-          <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">
-            Guardar Nómina
+          {/* Botón */}
+          <button
+            type="submit"
+            className="w-full mt-4 bg-gradient-to-r from-blue-500 to-blue-700 text-white font-semibold py-2 rounded-lg hover:from-blue-600 hover:to-blue-800 transition-all"
+          >
+            Registrar Nómina
           </button>
-          <button className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">
-            Cancelar
-          </button>
-        </div>
+
+          <p className="text-center text-gray-500 text-sm mt-2">
+            Estado por defecto: <span className="font-semibold">Activo</span>
+          </p>
+        </form>
       </div>
     </div>
   );

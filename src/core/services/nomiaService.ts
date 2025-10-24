@@ -1,6 +1,7 @@
 
 import { AxiosResponse } from "axios";
 import { customRequest } from "./api/httpClient";
+import { toast } from "react-toastify";
 
 
 export interface NominaData {
@@ -55,7 +56,7 @@ export const postListaNominaService = async (
       NominaRequest,
       NominaResponse
     >({
-      url: "/Nomina/procesar",
+      url: "/Nomina/listar",
       method: "post",
       data: requestBody,
     });
@@ -73,7 +74,6 @@ export interface AniosResponse {
     statusCode: number;
     success: string;
     message: string;
-    
     data : AnioData[];
 }
 
@@ -87,8 +87,6 @@ export const getAniosService = async (
     method: "get",
   }).then((res: AxiosResponse<AniosResponse>) => res.data);
 };
-
-
 
 export interface MesData {
     Mes: number;
@@ -136,8 +134,113 @@ export const getDepartamentosService = async (
   }).then((res: AxiosResponse<DepartamentosResponse>) => res.data);
 };
 
+export interface PeriodosData {
+    PeriodoCodigo: string;
+    PeriodoDescripcion: string;
+}
+
+export interface PeriodosResponse {
+    statusCode: number;
+    success: string;
+    message: string;
+    data : PeriodosData[];
+}
+
+export const getPeriodosService = async (
+): Promise<PeriodosResponse> => {
+
+  return await customRequest<{
+    token: string
+  }, PeriodosResponse>({
+    url: "/Nomina/periodos",
+    method: "get",
+  }).then((res: AxiosResponse<PeriodosResponse>) => res.data);
+};
+
+
+export interface ContratosData {
+    ContratoCodigo: string;
+    EmpleadoDescripcion: string;
+}
+
+export interface ContratosResponse {
+    statusCode: number;
+    success: string;
+    message: string;
+    data : ContratosData[];
+}
+
+export const getContratosService = async (
+): Promise<ContratosResponse> => {
+
+  return await customRequest<{
+    token: string
+  }, ContratosResponse>({
+    url: "/Nomina/contratos",
+    method: "get",
+  }).then((res: AxiosResponse<ContratosResponse>) => res.data);
+};
+
+
+export interface NominaResponseRequest {
+  statusCode: number;
+  success: string;
+  message: string;
+}
+export interface NominaAgregarRequest {
+  NominaCodigo: string;
+  PeriodoCodigo: string;
+  ContratoCodigo: string;
+  NominaHorasExtras: number;
+  NominaBonificacion: number;
+  NominaDescuentos: number;
+}
+
+export const postAgregarNominaService = async (
+  requestBody: NominaAgregarRequest
+): Promise<NominaResponseRequest | null> => {
+  try {
+    const response: AxiosResponse<NominaResponseRequest> = await customRequest<
+      NominaAgregarRequest,
+      NominaResponseRequest
+    >({
+      url: "/Nomina/procesar",
+      method: "post",
+      data: requestBody,
+    });
+    toast.success("Nómina agregada con éxito");
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
 
 
 
+export interface NominaEditarRequest {
+  NominaCodigo: string;
+  PeriodoCodigo: string;
+  ContratoCodigo: string;
+  NominaHorasExtras: number;
+  NominaBonificacion: number;
+  NominaDescuentos: number;
+}
 
-
+export const postEditarNominaService = async (
+  requestBody: NominaEditarRequest
+): Promise<NominaResponseRequest | null> => {
+  try {
+    const response: AxiosResponse<NominaResponseRequest> = await customRequest<
+      NominaEditarRequest,
+      NominaResponseRequest
+    >({
+      url: "/Nomina/actualizar",
+      method: "put",
+      data: requestBody,
+    });
+    toast.success("Nómina actualizada con éxito");
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
