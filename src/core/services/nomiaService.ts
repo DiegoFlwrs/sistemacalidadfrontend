@@ -11,6 +11,7 @@ export interface NominaData {
     PeriodoMes: number;
     PeriodoInicio: string;  
     PeriodoFin: string;     
+    ContratoCodigo: string;
     EmpleadoCodigo: string;
     EmpleadoApellido: string;
     EmpleadoNombre: string;

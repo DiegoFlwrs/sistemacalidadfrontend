@@ -12,6 +12,7 @@ import {
   NominaResponse,
   PeriodosData,
   postAgregarNominaService,
+  postEditarNominaService,
   postListaNominaService,
 } from "@/core/services/nomiaService";
 import { useEffect, useState } from "react";
@@ -32,6 +33,8 @@ export const useNomina = () => {
 
   const [periodo, setPeriodo] = useState<PeriodosData[]>([]);
   const [contratos, setContratos] = useState<ContratosData[]>([]);
+  const [nominaToEdit, setNominaToEdit] = useState<NominaData | null>(null);
+  const [reloadData, setReloadData] = useState(false);
 
   const obtenerPeriodos = async () => {
     try {
@@ -178,14 +181,44 @@ export const useNomina = () => {
         NominaBonificacion: NominaBonificacion,
         NominaDescuentos: NominaDescuentos,
       });
+      setReloadData(!reloadData); 
     } catch (error) {
       console.error("Error al consumir el servicio:", error);
     }
   };
 
+  const ActualizarNominaServicio = async (
+    NominaCodigo: string,
+    PeriodoCodigo: string,
+    ContratoCodigo: string,
+    NominaHorasExtras: number,
+    NominaBonificacion: number,
+    NominaDescuentos: number
+  ) => {
+    try {
+      await postEditarNominaService({
+        NominaCodigo: NominaCodigo,
+        PeriodoCodigo: PeriodoCodigo,
+        ContratoCodigo: ContratoCodigo,
+        NominaHorasExtras: NominaHorasExtras,
+        NominaBonificacion: NominaBonificacion,
+        NominaDescuentos: NominaDescuentos,
+      });
+      setReloadData(!reloadData); 
+    } catch (error) {
+      console.error("Error al actualizar la nómina:", error);
+    }
+  };
+
+  const handleEditNomina = (nomina: NominaData) => {
+    setNominaToEdit(nomina);
+    setIsEdit(true);
+    setOpenModalForm(true);
+  };
+
   useEffect(() => {
     consumirServicio();
-  }, [anio, mes, departamento, estado, empleadoNombre, empleadoApellido, page, AgregarNominaServicio]);
+  }, [anio, mes, departamento, estado, empleadoNombre, empleadoApellido, page, reloadData]);
 
   useEffect(() => {
     consumirServicio();
@@ -229,6 +262,10 @@ export const useNomina = () => {
     setIsEdit,
     contratos,
     periodo,
-    AgregarNominaServicio
+    AgregarNominaServicio,
+    ActualizarNominaServicio,
+    handleEditNomina,
+    nominaToEdit,
+    setNominaToEdit
   };
 };

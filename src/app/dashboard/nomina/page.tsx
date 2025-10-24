@@ -48,7 +48,11 @@ export default function NominaPage() {
     setIsEdit,
     contratos,
     periodo,
-    AgregarNominaServicio
+    AgregarNominaServicio,
+    ActualizarNominaServicio,
+    handleEditNomina,
+    nominaToEdit,
+    setNominaToEdit
   } = useNomina();
 
   return (
@@ -59,18 +63,15 @@ export default function NominaPage() {
         </Typography>
 
         <div className="flex my-5 gap-3">
-          <button className="bg-orange-600 text-white p-2 rounded"
+          <button className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-colors flex items-center gap-2"
           onClick={() => {
+            setNominaToEdit(null);
             setIsEdit(false);
             setOpenModalForm(true)
           }}
-          >Nueva Nómina</button>
-          <button className="bg-blue-600 text-white p-2 rounded"
-          onClick={() => {
-            setIsEdit(true);
-            setOpenModalForm(true)
-          }}
-          >Editar Nómina</button>
+          >
+            <span>➕</span> Nueva Nómina
+          </button>
           {/* <button className="bg-green-600 text-white p-2 rounded">Generar Reporte Nómina</button> */}
         </div>
 
@@ -166,6 +167,7 @@ export default function NominaPage() {
         nomina={nomina ?? []}
         setOpenModal={setOpenModal}
         setSelectedNomina={setSelectedNomina}
+        onEditNomina={handleEditNomina}
       />
       <Pagination
         page={page}
@@ -178,7 +180,16 @@ export default function NominaPage() {
       </ModalComponent>
 
       <ModalComponent open={openModalForm} setOpen={setOpenModalForm} width={480}>
-        <FormNomina isEdit={isEdit} setOpenModalForm= {setOpenModalForm} contratos={contratos} periodo={periodo} AgregarNominaServicio={AgregarNominaServicio} />
+        <FormNomina 
+          isEdit={isEdit} 
+          setOpenModalForm={setOpenModalForm} 
+          contratos={contratos} 
+          periodo={periodo} 
+          AgregarNominaServicio={AgregarNominaServicio}
+          ActualizarNominaServicio={ActualizarNominaServicio}
+          nominaToEdit={nominaToEdit}
+          setNominaToEdit={setNominaToEdit}
+        />
       </ModalComponent>
     </div>
   );
