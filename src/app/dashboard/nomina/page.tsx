@@ -70,7 +70,7 @@ export default function NominaPage() {
             setOpenModalForm(true)
           }}
           >
-            <span>➕</span> Nueva Nómina
+            <span>➕</span> Procesar Nómina
           </button>
           {/* <button className="bg-green-600 text-white p-2 rounded">Generar Reporte Nómina</button> */}
         </div>
@@ -191,6 +191,8 @@ export default function NominaPage() {
           setNominaToEdit={setNominaToEdit}
         />
       </ModalComponent>
+
+      
     </div>
   );
 }

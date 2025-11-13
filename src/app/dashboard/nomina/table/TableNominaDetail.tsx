@@ -69,17 +69,6 @@ export const TableNominaDetail = ({
               Ver
             </Button>
           </Tooltip>
-          <Tooltip title="Editar Nómina" arrow>
-            <Button
-              color="warning"
-              variant="outlined"
-              size="small"
-              startIcon={<EditIcon />}
-              onClick={() => onEditNomina(row._item)}
-            >
-              Editar
-            </Button>
-          </Tooltip>
         </div>
       )}
     />
