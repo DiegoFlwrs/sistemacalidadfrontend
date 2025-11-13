@@ -165,48 +165,15 @@ export const useNomina = () => {
   };
 
   const AgregarNominaServicio = async (
-    NominaCodigo: string,
-    PeriodoCodigo: string,
-    ContratoCodigo: string,
-    NominaHorasExtras: number,
-    NominaBonificacion: number,
-    NominaDescuentos: number
+    PeriodoCodigo: string
   ) => {
     try {
       await postAgregarNominaService({
-        NominaCodigo: NominaCodigo,
         PeriodoCodigo: PeriodoCodigo,
-        ContratoCodigo: ContratoCodigo,
-        NominaHorasExtras: NominaHorasExtras,
-        NominaBonificacion: NominaBonificacion,
-        NominaDescuentos: NominaDescuentos,
       });
       setReloadData(!reloadData); 
     } catch (error) {
       console.error("Error al consumir el servicio:", error);
-    }
-  };
-
-  const ActualizarNominaServicio = async (
-    NominaCodigo: string,
-    PeriodoCodigo: string,
-    ContratoCodigo: string,
-    NominaHorasExtras: number,
-    NominaBonificacion: number,
-    NominaDescuentos: number
-  ) => {
-    try {
-      await postEditarNominaService({
-        NominaCodigo: NominaCodigo,
-        PeriodoCodigo: PeriodoCodigo,
-        ContratoCodigo: ContratoCodigo,
-        NominaHorasExtras: NominaHorasExtras,
-        NominaBonificacion: NominaBonificacion,
-        NominaDescuentos: NominaDescuentos,
-      });
-      setReloadData(!reloadData); 
-    } catch (error) {
-      console.error("Error al actualizar la nómina:", error);
     }
   };
 
@@ -218,6 +185,7 @@ export const useNomina = () => {
 
   useEffect(() => {
     consumirServicio();
+    obtenerPeriodos();
   }, [anio, mes, departamento, estado, empleadoNombre, empleadoApellido, page, reloadData]);
 
   useEffect(() => {
@@ -263,7 +231,6 @@ export const useNomina = () => {
     contratos,
     periodo,
     AgregarNominaServicio,
-    ActualizarNominaServicio,
     handleEditNomina,
     nominaToEdit,
     setNominaToEdit

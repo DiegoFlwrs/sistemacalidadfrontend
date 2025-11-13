@@ -9,6 +9,9 @@ interface FormNominaProps {
   periodo: any[];
   setAnio: (anio: number) => void;
   setMes: (mes: number) => void;
+  AgregarNominaServicio: (
+    PeriodoCodigo: string
+  ) => Promise<void>;
 }
 
 export const FormNomina = ({
@@ -16,6 +19,7 @@ export const FormNomina = ({
   periodo,
   setAnio,
   setMes,
+  AgregarNominaServicio
 }: FormNominaProps) => {
   const [periodoFiltro, setPeriodoFiltro] = useState<string>("");
 
@@ -31,14 +35,18 @@ export const FormNomina = ({
       alert("Seleccione un periodo para procesar la nómina.");
       return;
     }
-    // Extraer año y mes del código de periodo
-    const periodoSeleccionado = periodo.find((p) => p.PeriodoCodigo === periodoFiltro);
-    if (periodoSeleccionado) {
-      const anio = parseInt(periodoSeleccionado.PeriodoCodigo.substring(0, 4));
-      const mes = parseInt(periodoSeleccionado.PeriodoCodigo.substring(4, 6));
-      setAnio(anio);
-      setMes(mes);
-    }
+    // // Extraer año y mes del código de periodo
+    // const periodoSeleccionado = periodo.find((p) => p.PeriodoCodigo === periodoFiltro);
+    // if (periodoSeleccionado) {
+    //   const anio = parseInt(periodoSeleccionado.PeriodoCodigo.substring(0, 4));
+    //   const mes = parseInt(periodoSeleccionado.PeriodoCodigo.substring(4, 6));
+    //   setAnio(anio);
+    //   setMes(mes);
+    // }
+
+    AgregarNominaServicio(
+      periodoFiltro
+    )
     setOpenModalForm(false);
   };
 

@@ -189,12 +189,12 @@ export interface NominaResponseRequest {
   message: string;
 }
 export interface NominaAgregarRequest {
-  NominaCodigo: string;
+  // NominaCodigo: string;
   PeriodoCodigo: string;
-  ContratoCodigo: string;
-  NominaHorasExtras: number;
-  NominaBonificacion: number;
-  NominaDescuentos: number;
+  // ContratoCodigo: string;
+  // NominaHorasExtras: number;
+  // NominaBonificacion: number;
+  // NominaDescuentos: number;
 }
 
 export const postAgregarNominaService = async (
@@ -209,7 +209,7 @@ export const postAgregarNominaService = async (
       method: "post",
       data: requestBody,
     });
-    toast.success("Nómina agregada con éxito");
+    toast.success("Nómina procesada con éxito");
     return response.data;
   } catch (error) {
     throw error;
