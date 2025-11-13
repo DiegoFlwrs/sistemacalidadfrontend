@@ -28,15 +28,24 @@ apiClient.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    const backendError = error.response?.data as ApiError;
-    const statusCode = backendError?.statusCode || error.response?.status;
-    const message = backendError?.message || "Ocurrió un error inesperado";
+    const backendError = error.response?.data as any;
+    const statusCode =
+      backendError?.statusCode ||
+      backendError?.StatusCode ||
+      error.response?.status;
 
-    toast.error(`Error ${statusCode}: ${message}`);
+    const message =
+      backendError?.message ||
+      backendError?.Message ||
+      "Ocurrió un error inesperado";
+
+    // toast.error(`Error ${statusCode}: ${message}`);
+    toast.error(`${message}`);
 
     return Promise.reject(error);
   }
 );
+
 
 export type HttpMethod = "get" | "post" | "put" | "delete" | "patch";
 export interface CustomRequestConfig<T> {

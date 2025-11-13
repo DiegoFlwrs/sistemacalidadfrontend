@@ -49,7 +49,6 @@ export default function NominaPage() {
     contratos,
     periodo,
     AgregarNominaServicio,
-    ActualizarNominaServicio,
     handleEditNomina,
     nominaToEdit,
     setNominaToEdit
@@ -70,7 +69,7 @@ export default function NominaPage() {
             setOpenModalForm(true)
           }}
           >
-            <span>➕</span> Nueva Nómina
+            <span>➕</span> Procesar Nómina
           </button>
           {/* <button className="bg-green-600 text-white p-2 rounded">Generar Reporte Nómina</button> */}
         </div>
@@ -181,16 +180,18 @@ export default function NominaPage() {
 
       <ModalComponent open={openModalForm} setOpen={setOpenModalForm} width={480}>
         <FormNomina 
-          isEdit={isEdit} 
+          // isEdit={isEdit} 
           setOpenModalForm={setOpenModalForm} 
-          contratos={contratos} 
+          // contratos={contratos} 
           periodo={periodo} 
           AgregarNominaServicio={AgregarNominaServicio}
-          ActualizarNominaServicio={ActualizarNominaServicio}
-          nominaToEdit={nominaToEdit}
-          setNominaToEdit={setNominaToEdit}
+          // ActualizarNominaServicio={ActualizarNominaServicio}
+          // nominaToEdit={nominaToEdit}
+          // setNominaToEdit={setNominaToEdit}
         />
       </ModalComponent>
+
+      
     </div>
   );
 }
