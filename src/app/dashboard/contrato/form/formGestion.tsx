@@ -1,7 +1,7 @@
 /* eslint-disable */
 // @ts-nocheck
 // "use client";
-import React, { useState, useEffect,useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Typography,
   TextField,
@@ -45,10 +45,10 @@ export const FormGestion: React.FC<FormGestionProps> = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [motivoModificacion, setMotivoModificacion] = useState("");
-    const submitLock = useRef(false);
+  const submitLock = useRef(false);
+  
   const [formData, setFormData] = useState({
-    
-    codigo:"",
+    codigo: "",
     empleadoCodigo: "",
     tipoContratoCodigo: "",
     modalidadCodigo: "",
@@ -58,39 +58,40 @@ export const FormGestion: React.FC<FormGestionProps> = ({
     salario: "",
     bonificacion: "0",
     descuento: "0",
-    usuarioCodigo: "USU01",
+    usuarioCodigo: "USR01",
     estado: "A" 
   });
 
   useEffect(() => {
     if (isEdit && contratoToEdit) {
-      const normalizarFecha = (fecha: string) => {
-      if (!fecha) return "";
-      return fecha.includes("T") ? fecha.split("T")[0] : fecha;
+      const normalizarFecha = (fecha: string | Date) => {
+        if (!fecha) return "";
+        const fechaStr = typeof fecha === 'string' ? fecha : fecha.toISOString();
+        return fechaStr.includes("T") ? fechaStr.split("T")[0] : fechaStr;
       };
+      
       setFormData({
-        codigo: contratoToEdit.codigo,
-        empleadoCodigo: contratoToEdit.empleadoCodigo.trim(),
-        tipoContratoCodigo: contratoToEdit.tipoContratoCodigo.trim(),
-        modalidadCodigo: contratoToEdit.modalidadCodigo.trim(),
-        jornadaCodigo: contratoToEdit.jornadaCodigo.trim(),
-        fechaInicio: normalizarFecha(contratoToEdit.fechaInicio),
-        fechaFin: normalizarFecha(contratoToEdit.fechaFin),
-        salario: contratoToEdit.salario.toString(),
-        bonificacion: contratoToEdit.bonificacion.toString(),
-        descuento: contratoToEdit.descuento.toString(),
-        usuarioCodigo: contratoToEdit.usuarioCodigo,
-        estado: contratoToEdit.estado 
+        codigo: contratoToEdit.ContratoCodigo || "",
+        empleadoCodigo: contratoToEdit.EmpleadoCodigo?.trim() || "",
+        tipoContratoCodigo: contratoToEdit.TipoContratoCodigo?.trim() || "",
+        modalidadCodigo: contratoToEdit.ModalidadCodigo?.trim() || "",
+        jornadaCodigo: contratoToEdit.JornadaCodigo?.trim() || "",
+        fechaInicio: normalizarFecha(contratoToEdit.ContratoFechaInicio),
+        fechaFin: normalizarFecha(contratoToEdit.ContratoFechaFin),
+        salario: contratoToEdit.ContratoSalario?.toString() || "",
+        bonificacion: contratoToEdit.ContratoBonificacion?.toString() || "0",
+        descuento: contratoToEdit.ContratoDescuento?.toString() || "0",
+        usuarioCodigo: contratoToEdit.UsuarioCodigo || "USR01",
+        estado: contratoToEdit.ContratoEstado || "A"
       });
     } else {
       resetForm();
     }
   }, [isEdit, contratoToEdit]);
 
-
   const resetForm = () => {
     setFormData({
-      codigo:"",
+      codigo: "",
       empleadoCodigo: "",
       tipoContratoCodigo: "",
       modalidadCodigo: "",
@@ -100,11 +101,10 @@ export const FormGestion: React.FC<FormGestionProps> = ({
       salario: "",
       bonificacion: "0",
       descuento: "0",
-      usuarioCodigo: "USU01",
-       estado: "A"
+      usuarioCodigo: "USR01",
+      estado: "A"
     });
   };
-
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -134,32 +134,58 @@ export const FormGestion: React.FC<FormGestionProps> = ({
         throw new Error("Debe ingresar un motivo de modificación");
       }
 
-          const contratoData = {
-            empleadoCodigo: formData.empleadoCodigo.trim(),
-            tipoContratoCodigo: formData.tipoContratoCodigo.trim(),
-            modalidadCodigo: formData.modalidadCodigo.trim(),
-            jornadaCodigo: formData.jornadaCodigo.trim(),
-            usuarioCodigo: formData.usuarioCodigo.trim(),
-            fechaInicio: formData.fechaInicio,
-            fechaFin: formData.fechaFin,
-            salario: parseFloat(formData.salario),
-            bonificacion: parseFloat(formData.bonificacion),
-            descuento: parseFloat(formData.descuento),
-            estado: "A"
-          };
+      const contratoData: ContratoData = {
+        ContratoCodigo: formData.codigo.trim(),
+        EmpleadoCodigo: formData.empleadoCodigo.trim(),
+        EmpleadoNombre: "", // Se asignará del empleado seleccionado
+        EmpleadoApellido: "", // Se asignará del empleado seleccionado
+        TipoContratoCodigo: formData.tipoContratoCodigo.trim(),
+        TipoContratoDescripcion: "", // Se asignará del tipo de contrato seleccionado
+        ModalidadCodigo: formData.modalidadCodigo.trim(),
+        ModalidadDescripcion: "", // Se asignará de la modalidad seleccionada
+        JornadaCodigo: formData.jornadaCodigo.trim(),
+        JornadaDescripcion: "", // Se asignará de la jornada seleccionada
+        UsuarioCodigo: formData.usuarioCodigo.trim(),
+        ContratoFechaInicio: formData.fechaInicio,
+        ContratoFechaFin: formData.fechaFin,
+        ContratoSalario: parseFloat(formData.salario),
+        ContratoBonificacion: parseFloat(formData.bonificacion),
+        ContratoDescuento: parseFloat(formData.descuento),
+        ContratoEstado: "A",
+        ContratoFechaRegistro: new Date().toISOString(),
+        ContratoFechaModificacion: new Date().toISOString()
+      };
+
+      // Obtener nombres y descripciones de los objetos seleccionados
+      const empleadoSeleccionado = empleados.find(emp => emp.Codigo === formData.empleadoCodigo);
+      if (empleadoSeleccionado) {
+        contratoData.EmpleadoNombre = empleadoSeleccionado.EmpleadoNombre || "";
+        contratoData.EmpleadoApellido = empleadoSeleccionado.EmpleadoApellido || "";
+      }
+
+      const tipoContratoSeleccionado = tiposContrato.find(tipo => tipo.Codigo === formData.tipoContratoCodigo);
+      if (tipoContratoSeleccionado) {
+        contratoData.TipoContratoDescripcion = tipoContratoSeleccionado.Descripcion || "";
+      }
+
+      const modalidadSeleccionada = modalidadesPago.find(mod => mod.Codigo === formData.modalidadCodigo);
+      if (modalidadSeleccionada) {
+        contratoData.ModalidadDescripcion = modalidadSeleccionada.Descripcion || "";
+      }
+
+      const jornadaSeleccionada = jornadasLaborales.find(jorn => jorn.Codigo === formData.jornadaCodigo);
+      if (jornadaSeleccionada) {
+        contratoData.JornadaDescripcion = jornadaSeleccionada.Descripcion || "";
+      }
 
       if (isEdit && contratoToEdit) {
         await ActualizarContratoServicio(
-          contratoToEdit.codigo.trim(),
+          contratoToEdit.ContratoCodigo.trim(),
           contratoData,
           motivoModificacion
         );
-      } 
-      else {
-        await AgregarContratoServicio({
-          ...contratoData,
-          codigo: formData.codigo.trim() 
-        });
+      } else {
+        await AgregarContratoServicio(contratoData);
       }
 
       setOpenModalForm(false);
@@ -180,7 +206,6 @@ export const FormGestion: React.FC<FormGestionProps> = ({
     setMotivoModificacion("");
     setError(null);
   };
-
 
   return (
     <div className="flex justify-center items-center">
@@ -208,7 +233,7 @@ export const FormGestion: React.FC<FormGestionProps> = ({
               type="text"
               value={formData.codigo}
               onChange={(e) =>
-              setFormData({ ...formData, codigo: e.target.value.toUpperCase() })
+                setFormData({ ...formData, codigo: e.target.value.toUpperCase() })
               }
               disabled={isEdit}                
               required={!isEdit}              
@@ -216,7 +241,6 @@ export const FormGestion: React.FC<FormGestionProps> = ({
               ${isEdit ? "bg-gray-200 cursor-not-allowed" : "bg-white"}`}
               placeholder="Ejemplo: CON15"
             />
-
           </div>
 
           {/* Empleado */}
@@ -238,7 +262,7 @@ export const FormGestion: React.FC<FormGestionProps> = ({
               <option value="">Seleccionar empleado</option>
               {empleados.map((emp) => (
                 <option key={emp.Codigo} value={emp.Codigo}>
-                  {emp.EmpleadoNombre}
+                  {emp.EmpleadoNombre} {emp.EmpleadoApellido}
                 </option>
               ))}
             </select>
@@ -319,7 +343,6 @@ export const FormGestion: React.FC<FormGestionProps> = ({
               <input
                 type="date"
                 value={formData.fechaInicio}
-                // mmin={new Date().toISOString().split("T")[0]}
                 onChange={(e) =>
                   setFormData({ ...formData, fechaInicio: e.target.value })
                 }
@@ -334,7 +357,6 @@ export const FormGestion: React.FC<FormGestionProps> = ({
               <input
                 type="date"
                 value={formData.fechaFin}
-                // min={new Date().toISOString().split("T")[0]}
                 onChange={(e) =>
                   setFormData({ ...formData, fechaFin: e.target.value })
                 }

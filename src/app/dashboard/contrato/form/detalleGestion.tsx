@@ -6,22 +6,15 @@ import ScheduleIcon from "@mui/icons-material/Schedule";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import { getEstadoColor } from "@/utils/helpers";
+import { TipoContrato } from '../hooks/useGestion';
 
 interface DetalleContratoProps {
   data?: any;
-  empleados?: any[];
-  tiposContrato?: any[];
-  modalidadesPago?: any[];
-  jornadasLaborales?: any[];
   getEstadoTexto: (estado: string) => string;
 }
 
 export const DetalleContratoLaboral = ({
   data,
-  empleados = [],
-  tiposContrato = [],
-  modalidadesPago = [],
-  jornadasLaborales = [],
   getEstadoTexto,
 }: DetalleContratoProps) => {
   if (!data) {
@@ -31,12 +24,6 @@ export const DetalleContratoLaboral = ({
       </Typography>
     );
   }
-
-  const empleado = empleados.find((e) => e.Codigo === data.empleadoCodigo);
-  const tipoContrato = tiposContrato.find((t) => t.Codigo === data.tipoContratoCodigo);
-  const modalidad = modalidadesPago.find((m) => m.Codigo === data.modalidadCodigo);
-  const jornada = jornadasLaborales.find((j) => j.Codigo === data.jornadaCodigo);
-
   return (
     <Paper
       elevation={8}
@@ -66,7 +53,7 @@ export const DetalleContratoLaboral = ({
           <Typography variant="subtitle1" color="text.secondary">
             <b>Código del Contrato</b>
           </Typography>
-          <Typography fontSize={15}>{data.codigo}</Typography>
+          <Typography fontSize={15}>{data.ContratoCodigo}</Typography>
         </Box>
 
         <Box>
@@ -74,7 +61,7 @@ export const DetalleContratoLaboral = ({
             <b>Empleado</b>
           </Typography>
           <Typography fontSize={15}>
-            {empleado ? empleado.EmpleadoNombre : "No encontrado"}
+            {data.EmpleadoNombre ? data.EmpleadoNombre : "No encontrado"}
           </Typography>
         </Box>
 
@@ -83,7 +70,7 @@ export const DetalleContratoLaboral = ({
             <b>Tipo de Contrato</b>
           </Typography>
           <Typography fontSize={15}>
-            {tipoContrato ? tipoContrato.Descripcion : "No especificado"}
+            {data.TipoContratoDescripcion ? data.TipoContratoDescripcion : "No especificado"}
           </Typography>
         </Box>
 
@@ -92,7 +79,7 @@ export const DetalleContratoLaboral = ({
             <b>Modalidad</b>
           </Typography>
           <Typography fontSize={15}>
-            {modalidad ? modalidad.Descripcion : "No especificado"}
+            {data.ModalidadDescripcion ? data.ModalidadDescripcion : "No especificado"}
           </Typography>
         </Box>
 
@@ -101,7 +88,7 @@ export const DetalleContratoLaboral = ({
             <b>Jornada</b>
           </Typography>
           <Typography fontSize={15}>
-            {jornada ? jornada.Descripcion : "No especificado"}
+            {data.JornadaDescripcion ? data.JornadaDescripcion : "No especificado"}
           </Typography>
         </Box>
       </Box>
@@ -128,7 +115,7 @@ export const DetalleContratoLaboral = ({
           }}
         >
           <MonetizationOnIcon fontSize="medium" color="primary" />
-          <Typography fontSize={15}>Salario: S/ {data.salario}</Typography>
+          <Typography fontSize={15}>Salario: S/ {data.ContratoSalario}</Typography>
         </Box>
 
         <Box
@@ -143,7 +130,7 @@ export const DetalleContratoLaboral = ({
           }}
         >
           <MonetizationOnIcon fontSize="medium" color="warning" />
-          <Typography fontSize={15}>Bonificación: S/ {data.bonificacion}</Typography>
+          <Typography fontSize={15}>Bonificación: S/ {data.ContratoBonificacion}</Typography>
         </Box>
 
         <Box
@@ -158,7 +145,7 @@ export const DetalleContratoLaboral = ({
           }}
         >
           <MonetizationOnIcon fontSize="medium" color="error" />
-          <Typography fontSize={15}>Descuentos: S/ {data.descuento}</Typography>
+          <Typography fontSize={15}>Descuentos: S/ {data.ContratoDescuento}</Typography>
         </Box>
       </Box>
 
@@ -179,18 +166,18 @@ export const DetalleContratoLaboral = ({
         >
           <b>Estado:</b>{" "}
           <Chip
-            label={getEstadoTexto(data.estado)}
-            color={getEstadoColor(data.estado)}
+            label={getEstadoTexto(data.ContratoEstado)}
+            color={getEstadoColor(data.ContratoEstado)}
             size="medium"
           />
         </Typography>
 
         <Typography variant="body1" color="text.secondary" fontWeight={500}>
-          <b>Inicio:</b> {data.fechaInicio}
+          <b>Inicio:</b> {data.ContratoFechaInicio}
         </Typography>
 
         <Typography variant="body1" color="text.secondary" fontWeight={500}>
-          <b>Fin:</b> {data.fechaFin}
+          <b>Fin:</b> {data.ContratoFechaFin}
         </Typography>
       </Box>
     </Paper>

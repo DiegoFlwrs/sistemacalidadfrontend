@@ -209,10 +209,6 @@ export default function GestionContratosPage() {
       <ModalComponent open={openModal} setOpen={setOpenModal} width={600}>
         <DetalleContratoLaboral
           data={selectedContrato}
-          empleados={empleados}
-          tiposContrato={tiposContrato}
-          modalidadesPago={modalidadesPago}
-          jornadasLaborales={jornadasLaborales}
           getEstadoTexto={getEstadoTexto}
         />
       </ModalComponent>

@@ -3,20 +3,43 @@ import { customRequest } from "./api/httpClient";
 import { toast } from "react-toastify";
 
 
+// export interface GestionData {
+//   ContratoCodigo: string;
+//   EmpleadoCodigo: string;
+//   TipoContratoCodigo: string;
+//   ModalidadCodigo: string;
+//   JornadaCodigo: string;
+//   UsuarioCodigo: string;
+//   ContratoFechaInicio: string;
+//   ContratoFechaFin: string;
+//   ContratoSalario: number;
+//   ContratoBonificacion: number;
+//   ContratoDescuento: number;
+//   ContratoEstado: string;
+// }
+
 export interface GestionData {
-  ContratoCodigo: string;
+  ContratoCodigo: string;  
   EmpleadoCodigo: string;
-  TipoContratoCodigo: string;
-  ModalidadCodigo: string;
-  JornadaCodigo: string;
+  EmpleadoNombre?: string;
+  EmpleadoApellido?: string;
+  TipoContratoCodigo: string;         
+  TipoContratoDescripcion?: string;
+  ModalidadCodigo: string;                 
+  ModalidadDescripcion?: string;
+  JornadaCodigo: string;                   
+  JornadaDescripcion?: string;
   UsuarioCodigo: string;
-  ContratoFechaInicio: string;
-  ContratoFechaFin: string;
-  ContratoSalario: number;
-  ContratoBonificacion: number;
+  ContratoFechaInicio: string | Date; 
+  ContratoFechaFin: string | Date;
+  ContratoSalario: number;                   
+  ContratoBonificacion: number;              
   ContratoDescuento: number;
   ContratoEstado: string;
+  ContratoFechaRegistro?: string | Date;
+  ContratoFechaModificacion?: string | Date;
 }
+
 
 export interface ApiResponse<T> {
   statusCode: number;

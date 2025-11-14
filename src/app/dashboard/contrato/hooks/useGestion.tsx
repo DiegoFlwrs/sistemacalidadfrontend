@@ -14,44 +14,60 @@ import {
 } from "@/core/services/gestionService";
 import { toast } from "react-toastify";
 
-
 export interface ContratoData {
-  codigo: string;
-  empleadoCodigo: string;
-  tipoContratoCodigo: string;
-  modalidadCodigo: string;
-  jornadaCodigo: string;
-  usuarioCodigo: string;
-  fechaInicio: string | Date;
-  fechaFin: string | Date;
-  salario: number;
-  bonificacion: number;
-  descuento: number;
-  estado: string;
+  ContratoCodigo: string;
+  EmpleadoCodigo: string;
+  EmpleadoNombre: string;
+  EmpleadoApellido: string;
+  TipoContratoCodigo: string;
+  TipoContratoDescripcion: string;
+  ModalidadCodigo: string;
+  ModalidadDescripcion: string;
+  JornadaCodigo: string;
+  JornadaDescripcion: string;
+  UsuarioCodigo: string;
+  ContratoFechaInicio: string | Date;
+  ContratoFechaFin: string | Date;
+  ContratoSalario: number;
+  ContratoBonificacion: number;
+  ContratoDescuento: number;
+  ContratoEstado: string;
+  ContratoFechaRegistro: string | Date;
+  ContratoFechaModificacion: string | Date;
 }
-
 
 export type TipoContrato = CatalogoBase;
 export type ModalidadPago = CatalogoBase;
 export type Jornada = CatalogoBase;
 export type Empleado = CatalogoBase;
 
-
 const mapApiToLocal = (apiData: GestionData): ContratoData => ({
-  codigo: apiData.ContratoCodigo,
-  empleadoCodigo: apiData.EmpleadoCodigo,
-  tipoContratoCodigo: apiData.TipoContratoCodigo,
-  modalidadCodigo: apiData.ModalidadCodigo,
-  jornadaCodigo: apiData.JornadaCodigo,
-  usuarioCodigo: apiData.UsuarioCodigo,
-  fechaInicio: apiData.ContratoFechaInicio?.split("T")[0] || "",
-  fechaFin: apiData.ContratoFechaFin?.split("T")[0] || "",
-  salario: apiData.ContratoSalario,
-  bonificacion: apiData.ContratoBonificacion,
-  descuento: apiData.ContratoDescuento,
-  estado: apiData.ContratoEstado?.trim(),
+  ContratoCodigo: apiData.ContratoCodigo,
+  EmpleadoCodigo: apiData.EmpleadoCodigo,
+  EmpleadoNombre: apiData.EmpleadoNombre || "",
+  EmpleadoApellido: apiData.EmpleadoApellido || "",
+  TipoContratoCodigo: apiData.TipoContratoCodigo,
+  TipoContratoDescripcion: apiData.TipoContratoDescripcion || "",
+  ModalidadCodigo: apiData.ModalidadCodigo,
+  ModalidadDescripcion: apiData.ModalidadDescripcion || "",
+  JornadaCodigo: apiData.JornadaCodigo,
+  JornadaDescripcion: apiData.JornadaDescripcion || ""  ,
+  UsuarioCodigo: apiData.UsuarioCodigo,
+  ContratoFechaInicio:
+  typeof apiData.ContratoFechaInicio === "string"
+    ? apiData.ContratoFechaInicio.split("T")[0]
+    : apiData.ContratoFechaInicio.toISOString().split("T")[0],
+  ContratoFechaFin:
+  typeof apiData.ContratoFechaFin === "string"
+    ? apiData.ContratoFechaFin.split("T")[0]
+    : apiData.ContratoFechaFin.toISOString().split("T")[0],
+  ContratoSalario: apiData.ContratoSalario,
+  ContratoBonificacion: apiData.ContratoBonificacion,
+  ContratoDescuento: apiData.ContratoDescuento,
+  ContratoEstado: apiData.ContratoEstado?.trim(),
+  ContratoFechaRegistro: apiData.ContratoFechaRegistro || "",
+  ContratoFechaModificacion: apiData.ContratoFechaModificacion || "",
 });
-
 
 const getEstadoTexto = (estado: string) => {
   if (!estado) return "Desconocido";
@@ -87,23 +103,19 @@ const getEstadoColor = (estado: string) => {
   }
 };
 
-
 export const useGestion = () => {
 
   const [openModal, setOpenModal] = useState(false);
   const [openModalForm, setOpenModalForm] = useState(false);
 
- 
   const [contratos, setContratos] = useState<ContratoData[]>([]);
   const [selectedContrato, setSelectedContrato] = useState<ContratoData | null>(null);
   const [contratoToEdit, setContratoToEdit] = useState<ContratoData | null>(null);
 
- 
   const [isEdit, setIsEdit] = useState(false);
   const [loading, setLoading] = useState(false);
   const [reloadData, setReloadData] = useState(false);
 
- 
   const [searchTerm, setSearchTerm] = useState("");
   const [estadoFilter, setEstadoFilter] = useState("");
   const [tipoContratoFilter, setTipoContratoFilter] = useState("");
@@ -120,7 +132,6 @@ export const useGestion = () => {
   const [tienePermisosElevados] = useState(true);
   const [contratosProximosVencer, setContratosProximosVencer] = useState<ContratoData[]>([]);
 
- 
   const obtenerContratosService = async () => {
     setLoading(true);
     try {
@@ -130,18 +141,20 @@ export const useGestion = () => {
 
         if (searchTerm) {
           data = data.filter((c) =>
-            c.codigo.toLowerCase().includes(searchTerm.toLowerCase())
+            c.ContratoCodigo.toLowerCase().includes(searchTerm.toLowerCase())
           );
         }
 
-        if (estadoFilter) data = data.filter((c) => c.estado === estadoFilter);
+        if (estadoFilter)
+          data = data.filter((c) => c.ContratoEstado === estadoFilter);
+
         if (tipoContratoFilter)
-          data = data.filter((c) => c.tipoContratoCodigo === tipoContratoFilter);
+          data = data.filter((c) => c.TipoContratoCodigo === tipoContratoFilter);
 
         const hoy = new Date();
         const proximos = data.filter((c) => {
-          if (c.estado !== "A") return false;
-          const fin = new Date(c.fechaFin);
+          if (c.ContratoEstado !== "A") return false;
+          const fin = new Date(c.ContratoFechaFin);
           const dias = Math.ceil((fin.getTime() - hoy.getTime()) / (1000 * 60 * 60 * 24));
           return dias <= 15 && dias > 0;
         });
@@ -162,7 +175,6 @@ export const useGestion = () => {
       setLoading(false);
     }
   };
-
 
   const obtenerTiposContrato = async () => {
     try {
@@ -200,61 +212,39 @@ export const useGestion = () => {
     }
   };
 
-
   const AgregarContratoServicio = async (contrato: ContratoData) => {
     try {
-
-      if (!contrato.fechaInicio || !contrato.fechaFin) {
+      if (!contrato.ContratoFechaInicio || !contrato.ContratoFechaFin) {
         throw new Error("Las fechas de inicio y fin son obligatorias.");
       }
 
-      // const inicioISO = new Date(`${contrato.fechaInicio}T00:00:00`);
-      // const finISO = new Date(`${contrato.fechaFin}T23:59:59`);
-
-      // //  Validar si la conversión fue exitosa
-      // if (isNaN(inicioISO.getTime()) || isNaN(finISO.getTime())) {
-      //   throw new Error("Formato de fecha inválido. Verifica los campos de fecha.");
-      // }
       const requestBody = {
-        ContratoCodigo: contrato.codigo,
-        EmpleadoCodigo: contrato.empleadoCodigo.trim(),
-        TipoContratoCodigo: contrato.tipoContratoCodigo.trim(),
-        ModalidadCodigo: contrato.modalidadCodigo.trim(),
-        JornadaCodigo: contrato.jornadaCodigo.trim(),
+        ContratoCodigo: contrato.ContratoCodigo,
+        EmpleadoCodigo: contrato.EmpleadoCodigo.trim(),
+        TipoContratoCodigo: contrato.TipoContratoCodigo.trim(),
+        ModalidadCodigo: contrato.ModalidadCodigo.trim(),
+        JornadaCodigo: contrato.JornadaCodigo.trim(),
         UsuarioCodigo: "USR01",
-        ContratoFechaInicio: `${contrato.fechaInicio}T00:00:00`,
-        ContratoFechaFin: `${contrato.fechaFin}T23:59:59`,
-        ContratoSalario: contrato.salario ?? 0,
-        ContratoBonificacion: contrato.bonificacion ?? 0,
-        ContratoDescuento: contrato.descuento ?? 0,
+        ContratoFechaInicio: `${contrato.ContratoFechaInicio}T00:00:00`,
+        ContratoFechaFin: `${contrato.ContratoFechaFin}T23:59:59`,
+        ContratoSalario: contrato.ContratoSalario ?? 0,
+        ContratoBonificacion: contrato.ContratoBonificacion ?? 0,
+        ContratoDescuento: contrato.ContratoDescuento ?? 0,
         ContratoEstado: "A",
       };
 
-      console.log("Body enviado:", requestBody);
+      const response = await postAgregarContratoLaboralService(requestBody);
 
-      const response= await postAgregarContratoLaboralService(requestBody);
-
-        if (response?.success) {
+      if (response?.success) {
         toast.success("Contrato registrado correctamente");
-        setReloadData(prev => !prev); 
-        setOpenModalForm(false);      
-        }
-    } catch (error: any) {
-      console.error(" Error completo:", error);
-
-      if (error.response) {
-        console.error("Error API:", error.response.data);
-        throw new Error(error.response.data.message || "Error en la API");
-      } else if (error.request) {
-        console.error(" No hubo respuesta del servidor:", error.request);
-        throw new Error("No se recibió respuesta del servidor");
-      } else {
-        console.error(" Error de configuración:", error.message);
-        throw new Error(error.message);
+        setReloadData(prev => !prev);
+        setOpenModalForm(false);
       }
+    } catch (error: any) {
+      console.error("Error completo:", error);
+      throw new Error(error.message);
     }
   };
-
 
   const ActualizarContratoServicio = async (
     codigo: string,
@@ -264,31 +254,29 @@ export const useGestion = () => {
     try {
       if (!codigo) throw new Error("El código del contrato es obligatorio");
 
-     
-
       const requestBody = {
         ContratoCodigo: codigo,
-        EmpleadoCodigo: data.empleadoCodigo?.trim() || "",
-        TipoContratoCodigo: data.tipoContratoCodigo?.trim() || "",
-        ModalidadCodigo: data.modalidadCodigo?.trim() || "",
-        JornadaCodigo: data.jornadaCodigo?.trim() || "",
-        UsuarioCodigo: data.usuarioCodigo?.trim() || "USR01",
-        ContratoFechaInicio: `${data.fechaInicio}T00:00:00`,
-        ContratoFechaFin: `${data.fechaFin}T23:59:59`,
-        ContratoSalario: data.salario ?? 0,
-        ContratoBonificacion: data.bonificacion ?? 0,
-        ContratoDescuento: data.descuento ?? 0,
-        ContratoEstado: data.estado || "A",
+        EmpleadoCodigo: data.EmpleadoCodigo?.trim() || "",
+        TipoContratoCodigo: data.TipoContratoCodigo?.trim() || "",
+        ModalidadCodigo: data.ModalidadCodigo?.trim() || "",
+        JornadaCodigo: data.JornadaCodigo?.trim() || "",
+        UsuarioCodigo: data.UsuarioCodigo || "USR01",
+        ContratoFechaInicio: `${data.ContratoFechaInicio}T00:00:00`,
+        ContratoFechaFin: `${data.ContratoFechaFin}T23:59:59`,
+        ContratoSalario: data.ContratoSalario ?? 0,
+        ContratoBonificacion: data.ContratoBonificacion ?? 0,
+        ContratoDescuento: data.ContratoDescuento ?? 0,
+        ContratoEstado: data.ContratoEstado || "A",
       };
 
       const res = await putActualizarContratoLaboralService(codigo, requestBody);
-      if (res) {
+      if (res?.success) {
         toast.success("Contrato actualizado correctamente");
         setReloadData(!reloadData);
         setOpenModalForm(false);
       }
     } catch (err: any) {
-      console.error(" Error al actualizar contrato:", err);
+      console.error("Error al actualizar contrato:", err);
       toast.error(err?.message || "Error al actualizar contrato");
     }
   };
@@ -316,7 +304,7 @@ export const useGestion = () => {
         setReloadData(!reloadData);
       }
     } catch (err: any) {
-      console.error(" Error al suspender contrato:", err);
+      console.error("Error al suspender contrato:", err);
       toast.error(err?.message || "Error al suspender contrato");
     }
   };
@@ -335,7 +323,6 @@ export const useGestion = () => {
     }
   };
 
-
   const handleEditContrato = (contrato: ContratoData) => {
     setContratoToEdit(contrato);
     setIsEdit(true);
@@ -350,7 +337,6 @@ export const useGestion = () => {
     setPage(1);
   };
 
- 
   useEffect(() => {
     obtenerContratosService();
     obtenerTiposContrato();
@@ -358,7 +344,6 @@ export const useGestion = () => {
     obtenerJornada();
     obtenerEmpleado();
   }, [reloadData, searchTerm, estadoFilter, tipoContratoFilter, page]);
-
 
   return {
     openModal,

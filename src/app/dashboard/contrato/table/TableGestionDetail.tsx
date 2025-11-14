@@ -39,8 +39,8 @@ export const TableGestionDetail: React.FC<TableGestionDetailProps> = ({
 
   const columns = [
     { field: "codigo", header: "Código" },
-    { field: "empleadoCodigo", header: "Cód. Empleado" },
-    { field: "tipoContratoCodigo", header: "Tipo Contrato" },
+    { field: "empleadoCodigo", header: "Empleado" },
+    { field: "tipoContratoCodigo", header: "Contrato" },
     { field: "modalidadCodigo", header: "Modalidad" },
     { field: "jornadaCodigo", header: "Jornada" },
     { field: "fechaInicio", header: "Inicio" },
@@ -53,32 +53,32 @@ export const TableGestionDetail: React.FC<TableGestionDetailProps> = ({
   const parseData = () =>
     contratos.map((c) => ({
       _item: c,
-      codigo: c.codigo,
-      empleadoCodigo: c.empleadoCodigo,
-      tipoContratoCodigo: c.tipoContratoCodigo,
-      modalidadCodigo: c.modalidadCodigo,
-      jornadaCodigo: c.jornadaCodigo,
-      fechaInicio: c.fechaInicio
-        ? new Date(c.fechaInicio).toLocaleDateString("es-PE", {
+      codigo: c.ContratoCodigo,
+      empleadoCodigo: c.EmpleadoNombre + " " + c.EmpleadoApellido,
+      tipoContratoCodigo: c.TipoContratoDescripcion,
+      modalidadCodigo: c.ModalidadDescripcion,
+      jornadaCodigo: c.JornadaDescripcion,
+      fechaInicio: c.ContratoFechaInicio
+        ? new Date(c.ContratoFechaInicio).toLocaleDateString("es-PE", {
             day: "2-digit",
             month: "2-digit",
             year: "numeric",
           })
         : "-",
-      fechaFin: c.fechaFin
-        ? new Date(c.fechaFin).toLocaleDateString("es-PE", {
+      fechaFin: c.ContratoFechaFin
+        ? new Date(c.ContratoFechaFin).toLocaleDateString("es-PE", {
             day: "2-digit",
             month: "2-digit",
             year: "numeric",
           })
         : "-",
-      salario: `S/ ${Number(c.salario || 0).toLocaleString("es-PE", {
+      salario: `S/ ${Number(c.ContratoSalario || 0).toLocaleString("es-PE", {
         minimumFractionDigits: 2,
       })}`,
       estado: (
         <Chip
-          label={getEstadoTexto(c.estado)}
-          color={getEstadoColor(c.estado)}
+          label={getEstadoTexto(c.ContratoEstado)}
+          color={getEstadoColor(c.ContratoEstado)}
           size="small"
         />
       ),
@@ -86,7 +86,7 @@ export const TableGestionDetail: React.FC<TableGestionDetailProps> = ({
 
 
   const actions = (row) => {
-    const estado = row._item.estado?.trim().toUpperCase();
+    const estado = row._item.ContratoEstado?.trim().toUpperCase();
 
     return(
     <div className="flex gap-1 justify-center">
@@ -106,7 +106,7 @@ export const TableGestionDetail: React.FC<TableGestionDetailProps> = ({
               color="secondary"
               onClick={() => onEditContrato(row._item)}
               size="small"
-              disabled={row._item.estado === 'F'}
+              disabled={row._item.ContratoEstado === 'F'}
             >
               <Edit />
             </IconButton>
@@ -118,7 +118,7 @@ export const TableGestionDetail: React.FC<TableGestionDetailProps> = ({
                 color="warning"
                 onClick={() => {
                   const motivo = prompt("Ingrese el motivo de la suspensión:");
-                  if (motivo && motivo.trim()) onSuspendContrato(row._item.codigo, motivo.trim());
+                  if (motivo && motivo.trim()) onSuspendContrato(row._item.ContratoCodigo, motivo.trim());
                 }}
                 size="small"
               >
@@ -133,7 +133,7 @@ export const TableGestionDetail: React.FC<TableGestionDetailProps> = ({
                 color="success"
                 onClick={() => {
                   const motivo = prompt("Ingrese el motivo de la reactivación:");
-                  if (motivo && motivo.trim()) onReactivateContrato(row._item.codigo, motivo.trim());
+                  if (motivo && motivo.trim()) onReactivateContrato(row._item.ContratoCodigo, motivo.trim());
                 }}
                 size="small"
               >
@@ -149,7 +149,7 @@ export const TableGestionDetail: React.FC<TableGestionDetailProps> = ({
                 onClick={() => {
                   const motivo = prompt("Ingrese el motivo de la activación:");
                   if (motivo && motivo.trim())
-                    onReactivateContrato(row._item.codigo, motivo.trim());
+                    onReactivateContrato(row._item.ContratoCodigo, motivo.trim());
                 }}
                 size="small"
               >
@@ -163,10 +163,10 @@ export const TableGestionDetail: React.FC<TableGestionDetailProps> = ({
               color="error"
               onClick={() => {
                 const motivo = prompt("Ingrese el motivo de la baja:");
-                if (motivo && motivo.trim()) onDeleteContrato(row._item.codigo, motivo.trim());
+                if (motivo && motivo.trim()) onDeleteContrato(row._item.ContratoCodigo, motivo.trim());
               }}
               size="small"
-              disabled={['F', 'I'].includes(row._item.estado)}
+              disabled={['F', 'I'].includes(row._item.ContratoEstado)}
             >
               <Delete />
             </IconButton>
