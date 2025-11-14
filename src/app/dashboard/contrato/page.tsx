@@ -14,7 +14,6 @@ import { FormGestion } from "./form/formGestion";
 export default function GestionContratosPage() {
   
   const {
- 
     openModal,
     setOpenModal,
     openModalForm,
@@ -22,8 +21,6 @@ export default function GestionContratosPage() {
     contratos,
     selectedContrato,
     setSelectedContrato,
-    
-
     searchTerm,
     setSearchTerm,
     estadoFilter,
@@ -31,20 +28,14 @@ export default function GestionContratosPage() {
     tipoContratoFilter,
     setTipoContratoFilter,
     filtro,
-    
-
     page,
     setPage,
     size,
     totalItems,
-    
-
     isEdit,
     setIsEdit,
     contratoToEdit,
     setContratoToEdit,
-    
-
     handleResetFilters,
     handleEditContrato,
     AgregarContratoServicio,
@@ -52,8 +43,6 @@ export default function GestionContratosPage() {
     EliminarContratoServicio,
     SuspenderContratoServicio,
     ReactivarContratoServicio,
-    
-
     contratosProximosVencer,
     tienePermisosElevados,
     getEstadoTexto,
@@ -65,7 +54,7 @@ export default function GestionContratosPage() {
     empleados
   } = useGestion();
 
-
+  //Comentario
 
   const estadoOptions = [
     { value: "", label: "Todos los estados" },
