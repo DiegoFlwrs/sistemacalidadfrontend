@@ -15,11 +15,16 @@ import {
   postEditarNominaService,
   postListaNominaService,
 } from "@/core/services/nomiaService";
+import { postReporteNominaPdfService } from "@/core/services/reporteService";
+import { downloadBlob } from "@/utils/helpers";
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
 export const useNomina = () => {
   const [openModal, setOpenModal] = useState(false);
   const [openModalForm, setOpenModalForm] = useState(false);
+
+  const [openModalFormReporte, setOpenModalFormReporte] = useState(false);
   const [nomina, setNomina] = useState<NominaData[] | null>(null);
 
   const [mes, setMes] = useState<number | null>(null);
@@ -197,6 +202,30 @@ export const useNomina = () => {
     obtenerContratos();
   }, []);
 
+  const handleDescargar = async (PeriodoCodigo:string) => {
+  try {
+    const requestBody = {
+      PeriodoCodigo: PeriodoCodigo,
+      DepartamentoCodigo: null,
+      CargoCodigo: null,
+      TipoContratoCodigo: null,
+    };
+
+    const pdfBlob = await postReporteNominaPdfService(requestBody);
+
+    downloadBlob(
+      pdfBlob,
+      `Reporte_Nomina_${new Date().toISOString()}.pdf`
+    );
+
+    toast.success("Reporte descargado correctamente");
+  } catch (error: any) {
+    toast.error(error.message || "Error al descargar el reporte");
+    console.error(error);
+  }
+};
+
+
   return {
     openModal,
     setOpenModal,
@@ -233,6 +262,9 @@ export const useNomina = () => {
     AgregarNominaServicio,
     handleEditNomina,
     nominaToEdit,
-    setNominaToEdit
+    setNominaToEdit,
+    handleDescargar,
+    openModalFormReporte, 
+    setOpenModalFormReporte
   };
 };

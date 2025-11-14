@@ -58,6 +58,7 @@ export interface CustomRequestConfig<T> {
   onUploadProgress?: (progressEvent: ProgressEvent) => void;
   timeout?: number;
   signal?: AbortSignal;
+  responseType?: AxiosRequestConfig["responseType"];
 }
 
 export const customRequest = <TRequest = unknown, TResponse = unknown>(
@@ -76,6 +77,7 @@ export const customRequest = <TRequest = unknown, TResponse = unknown>(
     params: config.params,
     timeout: config.timeout ?? 10000,
     cancelToken: source.token,
+    responseType: config.responseType,
   };
 
   if (config.signal) {

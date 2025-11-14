@@ -13,6 +13,7 @@ import { ESTADOS_NOMINA, MESES } from "@/utils/constanst";
 import RestartAltIcon from '@mui/icons-material/RestartAlt';
 import Pagination from "@/components/Pagination";
 import { FormNomina } from "./form/formNomina";
+import { FormReporte } from "./form/formReporte";
 
 export default function NominaPage() {
   const {
@@ -51,7 +52,10 @@ export default function NominaPage() {
     AgregarNominaServicio,
     handleEditNomina,
     nominaToEdit,
-    setNominaToEdit
+    setNominaToEdit,
+    handleDescargar,
+    openModalFormReporte, 
+    setOpenModalFormReporte
   } = useNomina();
 
   return (
@@ -71,7 +75,7 @@ export default function NominaPage() {
           >
             <span>➕</span> Procesar Nómina
           </button>
-          {/* <button className="bg-green-600 text-white p-2 rounded">Generar Reporte Nómina</button> */}
+          <button className="bg-green-600 text-white p-2 rounded" onClick={() => setOpenModalFormReporte(true)}>Generar Reporte Nómina</button>
         </div>
 
         <Typography fontSize={20} fontWeight={600} mb={3}>
@@ -180,14 +184,17 @@ export default function NominaPage() {
 
       <ModalComponent open={openModalForm} setOpen={setOpenModalForm} width={480}>
         <FormNomina 
-          // isEdit={isEdit} 
           setOpenModalForm={setOpenModalForm} 
-          // contratos={contratos} 
           periodo={periodo} 
           AgregarNominaServicio={AgregarNominaServicio}
-          // ActualizarNominaServicio={ActualizarNominaServicio}
-          // nominaToEdit={nominaToEdit}
-          // setNominaToEdit={setNominaToEdit}
+        />
+      </ModalComponent>
+
+      <ModalComponent open={openModalFormReporte} setOpen={setOpenModalFormReporte} width={480}>
+        <FormReporte 
+          setOpenModalForm={setOpenModalFormReporte} 
+          periodo={periodo} 
+          handleDescargar={handleDescargar}
         />
       </ModalComponent>
 
