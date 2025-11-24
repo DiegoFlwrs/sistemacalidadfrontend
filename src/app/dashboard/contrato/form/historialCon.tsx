@@ -31,6 +31,7 @@ export const HistorialContratoModal = ({
             <Paper key={item.HistorialCodigo} sx={{ p: 2 }}>
               <Typography><b>Código contrato:</b> {item.ContratoCodigo}</Typography>
               <Typography><b>Detalle:</b> {item.Detalle}</Typography>
+              <Typography><b>Motivo:</b> {item.Motivo}</Typography>
               <Typography><b>Fecha:</b> {item.HistorialFechaF}</Typography>
             </Paper>
           ))}

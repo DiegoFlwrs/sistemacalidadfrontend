@@ -192,11 +192,14 @@ export const TableGestionDetail: React.FC<TableGestionDetailProps> = ({
           <Tooltip title="Dar de baja">
             <IconButton
               color="error"
-              onClick={() =>
-                abrirAccion("Dar de baja", (motivo) =>
-                  onDeleteContrato(row._item.ContratoCodigo, motivo)
-                )
-              }
+              onClick={async () => {
+                try {
+                  await onDeleteContrato(row._item.ContratoCodigo, null); // sin motivo
+                  // toast.success("Se eliminó correctamente");
+                } catch (error) {
+                  toast.error("No se pudo eliminar el contrato");
+                }
+              }}
               size="small"
               disabled={['F', 'I'].includes(row._item.ContratoEstado)}
             >

@@ -95,7 +95,7 @@ export const deleteContratoLaboralService = async (contratoCodigo: string) => {
       url: `/ContratoLaboral/Eliminar?contratoCodigo=${contratoCodigo}`,
       method: "delete",
     });
-    toast.success("Contrato laboral eliminado con éxito");
+    // toast.success("Contrato laboral eliminado con éxito");
     return data;
   } catch (error: any) {
     console.error(" Error al eliminar contrato:", error);
@@ -158,9 +158,9 @@ export const getEmpleadoService = async () =>
   })).data;
 
   export interface HistorialContrato {
-  HistorialCodigo: string;
   ContratoCodigo: string;
   Detalle: string;
+  Motivo: string;
   HistorialFechaF: string;
 }
 
