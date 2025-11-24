@@ -174,7 +174,7 @@ export const TableGestionDetail: React.FC<TableGestionDetailProps> = ({
                 color="success"
                  onClick={() => {
                   if (tienePermisosElevados) {
-                    toast.error("No tienes permisos para activar un contrato");
+                    toast.error("Solo se puede reactivar contratos suspendidos");
                     return;
                   }
 

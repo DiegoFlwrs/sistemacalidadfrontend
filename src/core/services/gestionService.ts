@@ -156,3 +156,16 @@ export const getEmpleadoService = async () =>
     url: "/ContratoLaboral/EmpleadosSinContrato",
     method: "get",
   })).data;
+
+  export interface HistorialContrato {
+  HistorialCodigo: string;
+  ContratoCodigo: string;
+  Detalle: string;
+  HistorialFechaF: string;
+}
+
+export const getHistorialContratoService = async () =>
+  (await customRequest<{}, ApiResponse<HistorialContrato>>({
+    url: "/ContratoLaboral/DetallesHistorial",
+    method: "get",
+  })).data;

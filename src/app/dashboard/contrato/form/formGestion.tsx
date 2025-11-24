@@ -126,6 +126,20 @@ export const FormGestion: React.FC<FormGestionProps> = ({
         throw new Error("La fecha de fin debe ser posterior a la de inicio");
       }
 
+      // const fechaInicio = new Date(formData.fechaInicio);
+      // const fechaFin = new Date(formData.fechaFin);
+
+      // const fechaMinima = new Date(fechaInicio);
+      // fechaMinima.setMonth(fechaMinima.getMonth() + 3);
+
+      // if (fechaFin < fechaMinima) {
+      //   const fechaMinimaStr = fechaMinima.toLocaleDateString("es-PE");
+      //   throw new Error(
+      //     `El contrato debe tener un plazo mínimo de 3 meses. La fecha de fin mínima requerida es ${fechaMinimaStr}.`
+      //   );
+      // }
+
+
       if (isEdit && !motivoModificacion.trim()) {
         throw new Error("Debe ingresar un motivo de modificación");
       }
@@ -187,8 +201,14 @@ export const FormGestion: React.FC<FormGestionProps> = ({
       // setContratoToEdit(null);
       // setMotivoModificacion("");
       // resetForm();
-    } catch (err: any) {
-      setError(err.message || "Error al guardar el contrato");
+    } catch (error: any) {
+        const backendMessage =
+        err.response?.data?.message ||
+        err.response?.data?.errors ||
+        err.message ||
+        "Error al guardar el contrato";
+
+      setError(backendMessage);
     } finally {
       setLoading(false);
       submitLock.current = false; 
@@ -398,7 +418,7 @@ export const FormGestion: React.FC<FormGestionProps> = ({
             <input
               type="number"
               value={formData.salario}
-              min="1025"
+              min="1130"
               step="0.01"
               onChange={(e) =>
                 setFormData({ ...formData, salario: e.target.value })

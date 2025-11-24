@@ -12,6 +12,8 @@ import {
   putCambiarEstadoContratoLaboralService,
   CatalogoBase,
   EmpleadoData,
+  getHistorialContratoService,
+  HistorialContrato
 } from "@/core/services/gestionService";
 import { toast } from "react-toastify";
 
@@ -134,6 +136,7 @@ export const useGestion = () => {
   const [openModalAccion, setOpenModalAccion] = useState(false);
   const [accionTitulo, setAccionTitulo] = useState("");
   const [accionCallback, setAccionCallback] = useState(null);
+  const [historialContrato, setHistorialContrato] = useState<HistorialContrato[]>([]);
 
   const obtenerContratosService = async () => {
     setLoading(true);
@@ -220,6 +223,18 @@ const obtenerEmpleado = async () => {
   }
 };
 
+const obtenerHistorialContrato = async () => {
+  try {
+    const response = await getHistorialContratoService();
+
+    if (response.success) {
+      setHistorialContrato(response.data);
+      setOpenModal(true);
+    }
+  } catch {
+    toast.error("Error al obtener el historial");
+  }
+};
 
   const AgregarContratoServicio = async (contrato: ContratoData) => {
     try {
@@ -392,5 +407,8 @@ const obtenerEmpleado = async () => {
     setAccionTitulo,
     accionCallback,
     setAccionCallback,
+
+    historialContrato,
+    obtenerHistorialContrato
   };
 };

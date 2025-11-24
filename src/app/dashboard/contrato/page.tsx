@@ -11,6 +11,7 @@ import { Search, RestartAlt, Warning } from "@mui/icons-material";
 import Pagination from "@/components/Pagination";
 import { FormGestion } from "./form/formGestion";
 import { FormAccionContrato } from "./form/formAccionContrato";
+import { HistorialContratoModal } from "./form/historialCon";
 
 export default function GestionContratosPage() {
   
@@ -58,7 +59,9 @@ export default function GestionContratosPage() {
     accionTitulo,
     accionCallback,
     setAccionTitulo,
-    setAccionCallback
+    setAccionCallback,
+    historialContrato,
+    obtenerHistorialContrato
   } = useGestion();
 
   //Comentario
@@ -134,6 +137,14 @@ export default function GestionContratosPage() {
             Nuevo Contrato
           </Button>
         </div>
+
+        <Button
+          variant="outlined"
+          size="small"
+          onClick={obtenerHistorialContrato}
+        >
+          Ver historial
+        </Button>
 
         <Typography fontSize={20} fontWeight={600} mb={3}>
           Filtros de búsqueda
@@ -255,6 +266,13 @@ export default function GestionContratosPage() {
           }}
         />
       </ModalComponent>
+
+      <HistorialContratoModal
+        open={openModal}
+        setOpen={setOpenModal}
+        historialContrato={historialContrato}
+      />
+
     </div>
   );
 }
