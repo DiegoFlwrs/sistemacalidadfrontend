@@ -22,7 +22,15 @@ interface TableGestionDetailProps {
   tienePermisosElevados: boolean;
   getEstadoTexto: (estadoCodigo: string) => string;
   getEstadoColor: (estadoCodigo: string) => "success" | "warning" | "error" | "default";
+
+  openModalAccion: boolean;
+  setOpenModalAccion: (open: boolean) => void;
+  accionTitulo: string;
+  setAccionTitulo: (titulo: string) => void;
+  accionCallback: any;
+  setAccionCallback: (callback: any) => void;
 }
+
 
 export const TableGestionDetail: React.FC<TableGestionDetailProps> = ({
   contratos,
@@ -35,7 +43,21 @@ export const TableGestionDetail: React.FC<TableGestionDetailProps> = ({
   tienePermisosElevados,
   getEstadoTexto,
   getEstadoColor,
+
+  openModalAccion,
+  setOpenModalAccion,
+  accionTitulo,
+  setAccionTitulo,
+  accionCallback,
+  setAccionCallback,
 }) => {
+
+
+  const abrirAccion = (titulo, callback) => {
+    setAccionTitulo(titulo);
+    setAccionCallback(() => callback);
+    setOpenModalAccion(true);
+  };
 
   const columns = [
     { field: "codigo", header: "Código" },
@@ -116,10 +138,11 @@ export const TableGestionDetail: React.FC<TableGestionDetailProps> = ({
             <Tooltip title="Suspender">
               <IconButton
                 color="warning"
-                onClick={() => {
-                  const motivo = prompt("Ingrese el motivo de la suspensión:");
-                  if (motivo && motivo.trim()) onSuspendContrato(row._item.ContratoCodigo, motivo.trim());
-                }}
+                onClick={() =>
+                  abrirAccion("Suspender contrato", (motivo) =>
+                    onSuspendContrato(row._item.ContratoCodigo, motivo)
+                  )
+                }
                 size="small"
               >
                 <Pause />
@@ -131,10 +154,11 @@ export const TableGestionDetail: React.FC<TableGestionDetailProps> = ({
             <Tooltip title="Reactivar">
               <IconButton
                 color="success"
-                onClick={() => {
-                  const motivo = prompt("Ingrese el motivo de la reactivación:");
-                  if (motivo && motivo.trim()) onReactivateContrato(row._item.ContratoCodigo, motivo.trim());
-                }}
+                onClick={() =>
+                  abrirAccion("Reactivar contrato", (motivo) =>
+                    onReactivateContrato(row._item.ContratoCodigo, motivo)
+                  )
+                }
                 size="small"
               >
                 <PlayArrow />
@@ -161,10 +185,11 @@ export const TableGestionDetail: React.FC<TableGestionDetailProps> = ({
           <Tooltip title="Dar de baja">
             <IconButton
               color="error"
-              onClick={() => {
-                const motivo = prompt("Ingrese el motivo de la baja:");
-                if (motivo && motivo.trim()) onDeleteContrato(row._item.ContratoCodigo, motivo.trim());
-              }}
+              onClick={() =>
+                abrirAccion("Dar de baja", (motivo) =>
+                  onDeleteContrato(row._item.ContratoCodigo, motivo)
+                )
+              }
               size="small"
               disabled={['F', 'I'].includes(row._item.ContratoEstado)}
             >

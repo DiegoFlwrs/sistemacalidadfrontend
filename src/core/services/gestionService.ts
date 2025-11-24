@@ -32,12 +32,11 @@ export interface GestionData {
   UsuarioCodigo: string;
   ContratoFechaInicio: string | Date; 
   ContratoFechaFin: string | Date;
-  ContratoSalario: number;                   
-  ContratoBonificacion: number;              
-  ContratoDescuento: number;
+  ContratoSalario: number;      
   ContratoEstado: string;
   ContratoFechaRegistro?: string | Date;
   ContratoFechaModificacion?: string | Date;
+  motivo:string;
 }
 
 
@@ -144,4 +143,16 @@ export const getCatalogoService = async <T extends CatalogoBase>(
 export const getTipoContratoService = () => getCatalogoService("TipoContrato");
 export const getModalidadService = () => getCatalogoService("Modalidad");
 export const getJornadaService = () => getCatalogoService("Jornada");
-export const getEmpleadoService = () => getCatalogoService("ListarPorEmpleadoCodigo");
+// export const getEmpleadoService = () => getCatalogoService("EmpleadosSinContrato");
+
+
+export interface EmpleadoData {
+  EmpleadoCodigo: string;
+  EmpleadoNombre: string;
+}
+
+export const getEmpleadoService = async () =>
+  (await customRequest<{}, ApiResponse<EmpleadoData>>({
+    url: "/ContratoLaboral/EmpleadosSinContrato",
+    method: "get",
+  })).data;
