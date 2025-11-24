@@ -10,6 +10,8 @@ import {
 import { Edit, Delete, Visibility, Pause, PlayArrow } from "@mui/icons-material";
 import { TableGeneric } from "@/components/TableGeneric";
 import { ContratoData } from "../hooks/useGestion";
+import { toast } from "react-toastify";
+
 
 interface TableGestionDetailProps {
   contratos: ContratoData[];
@@ -112,14 +114,14 @@ export const TableGestionDetail: React.FC<TableGestionDetailProps> = ({
 
     return(
     <div className="flex gap-1 justify-center">
-      <Tooltip title="Ver detalle">
+      {/* <Tooltip title="Ver detalle">
         <IconButton color="primary" onClick={() => {
           setSelectedContrato(row._item);
           setOpenModal(true);
         }} size="small">
           <Visibility />
         </IconButton>
-      </Tooltip>
+      </Tooltip> */}
 
       {tienePermisosElevados && (
         <>
@@ -170,10 +172,15 @@ export const TableGestionDetail: React.FC<TableGestionDetailProps> = ({
             <Tooltip title="Activar contrato">
               <IconButton
                 color="success"
-                onClick={() => {
-                  const motivo = prompt("Ingrese el motivo de la activación:");
-                  if (motivo && motivo.trim())
-                    onReactivateContrato(row._item.ContratoCodigo, motivo.trim());
+                 onClick={() => {
+                  if (tienePermisosElevados) {
+                    toast.error("No tienes permisos para activar un contrato");
+                    return;
+                  }
+
+                  // const motivo = prompt("Ingrese el motivo de la activación:");
+                  // if (motivo && motivo.trim())
+                  //   onReactivateContrato(row._item.ContratoCodigo, motivo.trim());
                 }}
                 size="small"
               >

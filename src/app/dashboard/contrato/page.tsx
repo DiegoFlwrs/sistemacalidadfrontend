@@ -223,12 +223,12 @@ export default function GestionContratosPage() {
         onPageChange={setPage}
       />
 
-      <ModalComponent open={openModal} setOpen={setOpenModal} width={600}>
+      {/* <ModalComponent open={openModal} setOpen={setOpenModal} width={600}>
         <DetalleContratoLaboral
           data={selectedContrato}
           getEstadoTexto={getEstadoTexto}
         />
-      </ModalComponent>
+      </ModalComponent> */}
 
       <ModalComponent open={openModalForm} setOpen={setOpenModalForm} width={400}>
         <FormGestion 
