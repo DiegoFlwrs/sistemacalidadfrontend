@@ -12,7 +12,7 @@ export const DASHBOARD_ROUTES = [
 
 export const MODULE_TITLES: Record<string, string> = {
   "/dashboard": "Dashboard",
-  "/dashboard/contrato": "Gestión de Contrato Laboral",
-  "/dashboard/nomina": "Gestión de Nominas por periodo",
+  "/dashboard/contrato": "Gestiónar Contrato Laboral",
+  "/dashboard/nomina": "Procesar Nominas por periodo",
   // "/dashboard/reporte": "Gestión de Reportes de Nominas",
 };
