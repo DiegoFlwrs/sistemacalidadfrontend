@@ -130,8 +130,8 @@ export const TableGestionDetail: React.FC<TableGestionDetailProps> = ({
               color="secondary"
               size="small"
               onClick={() => {
-                if (estado === "I") {
-                  toast.error("No se puede editar el contrato por que esta Inactivo");
+                if (estado === "I" || estado === "S") {
+                  toast.error("No se puede editar el contrato porque está suspendido o inactivo");
                   return;
                 }
                 onEditContrato(row._item);
