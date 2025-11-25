@@ -128,9 +128,15 @@ export const TableGestionDetail: React.FC<TableGestionDetailProps> = ({
           <Tooltip title="Editar">
             <IconButton
               color="secondary"
-              onClick={() => onEditContrato(row._item)}
               size="small"
-              disabled={row._item.ContratoEstado === 'F'}
+              onClick={() => {
+                if (estado === "I") {
+                  toast.error("No se puede editar el contrato por que esta Inactivo");
+                  return;
+                }
+                onEditContrato(row._item);
+              }}
+              disabled={row._item.ContratoEstado === "F"} 
             >
               <Edit />
             </IconButton>

@@ -70,7 +70,7 @@ export default function GestionContratosPage() {
     { value: "", label: "Todos los estados" },
     { value: "A", label: "Vigente" },
     { value: "S", label: "Suspendido" },
-    { value: "F", label: "Finalizado" },
+    // { value: "F", label: "Finalizado" },
     { value: "I", label: "Inactivo" },
   ];
 
