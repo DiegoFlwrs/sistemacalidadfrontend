@@ -56,11 +56,9 @@ export const FormGestion: React.FC<FormGestionProps> = ({
     fechaInicio: "",
     fechaFin: "",
     salario: "",
-    bonificacion: "0",
-    descuento: "0",
-    usuarioCodigo: "USR01",
-    estado: "A" 
+    usuarioCodigo: "USR01"
   });
+
 
   useEffect(() => {
     if (isEdit && contratoToEdit) {
@@ -99,8 +97,6 @@ export const FormGestion: React.FC<FormGestionProps> = ({
       fechaInicio: "",
       fechaFin: "",
       salario: "",
-      bonificacion: "0",
-      descuento: "0",
       usuarioCodigo: "USR01",
       estado: "A"
     });
@@ -130,37 +126,49 @@ export const FormGestion: React.FC<FormGestionProps> = ({
         throw new Error("La fecha de fin debe ser posterior a la de inicio");
       }
 
+      // const fechaInicio = new Date(formData.fechaInicio);
+      // const fechaFin = new Date(formData.fechaFin);
+
+      // const fechaMinima = new Date(fechaInicio);
+      // fechaMinima.setMonth(fechaMinima.getMonth() + 3);
+
+      // if (fechaFin < fechaMinima) {
+      //   const fechaMinimaStr = fechaMinima.toLocaleDateString("es-PE");
+      //   throw new Error(
+      //     `El contrato debe tener un plazo mínimo de 3 meses. La fecha de fin mínima requerida es ${fechaMinimaStr}.`
+      //   );
+      // }
+
+
       if (isEdit && !motivoModificacion.trim()) {
         throw new Error("Debe ingresar un motivo de modificación");
       }
 
       const contratoData: ContratoData = {
-        ContratoCodigo: formData.codigo.trim(),
         EmpleadoCodigo: formData.empleadoCodigo.trim(),
-        EmpleadoNombre: "", // Se asignará del empleado seleccionado
-        EmpleadoApellido: "", // Se asignará del empleado seleccionado
         TipoContratoCodigo: formData.tipoContratoCodigo.trim(),
-        TipoContratoDescripcion: "", // Se asignará del tipo de contrato seleccionado
         ModalidadCodigo: formData.modalidadCodigo.trim(),
-        ModalidadDescripcion: "", // Se asignará de la modalidad seleccionada
         JornadaCodigo: formData.jornadaCodigo.trim(),
-        JornadaDescripcion: "", // Se asignará de la jornada seleccionada
         UsuarioCodigo: formData.usuarioCodigo.trim(),
         ContratoFechaInicio: formData.fechaInicio,
         ContratoFechaFin: formData.fechaFin,
-        ContratoSalario: parseFloat(formData.salario),
-        ContratoBonificacion: parseFloat(formData.bonificacion),
-        ContratoDescuento: parseFloat(formData.descuento),
-        ContratoEstado: "A",
-        ContratoFechaRegistro: new Date().toISOString(),
-        ContratoFechaModificacion: new Date().toISOString()
+        ContratoSalario: parseFloat(formData.salario)
       };
+      
+      let empleadoSeleccionado;
+      if (isEdit) {
+        empleadoSeleccionado = {
+          Codigo: formData.empleadoCodigo,
+          Descripcion: `${contratoToEdit?.EmpleadoNombre} ${contratoToEdit?.EmpleadoApellido}`
+        };
+      } else {
+        empleadoSeleccionado = empleados.find(emp =>
+          emp.Codigo.trim().toUpperCase() === formData.empleadoCodigo.trim().toUpperCase()
+        );
 
-      // Obtener nombres y descripciones de los objetos seleccionados
-      const empleadoSeleccionado = empleados.find(emp => emp.Codigo === formData.empleadoCodigo);
-      if (empleadoSeleccionado) {
-        contratoData.EmpleadoNombre = empleadoSeleccionado.EmpleadoNombre || "";
-        contratoData.EmpleadoApellido = empleadoSeleccionado.EmpleadoApellido || "";
+        if (!empleadoSeleccionado) {
+          throw new Error("El código de empleado no existe");
+        }
       }
 
       const tipoContratoSeleccionado = tiposContrato.find(tipo => tipo.Codigo === formData.tipoContratoCodigo);
@@ -188,12 +196,19 @@ export const FormGestion: React.FC<FormGestionProps> = ({
         await AgregarContratoServicio(contratoData);
       }
 
-      setOpenModalForm(false);
-      setContratoToEdit(null);
-      setMotivoModificacion("");
-      resetForm();
-    } catch (err: any) {
-      setError(err.message || "Error al guardar el contrato");
+      
+      // setOpenModalForm(false);
+      // setContratoToEdit(null);
+      // setMotivoModificacion("");
+      // resetForm();
+    } catch (error: any) {
+        const backendMessage =
+        err.response?.data?.message ||
+        err.response?.data?.errors ||
+        err.message ||
+        "Error al guardar el contrato";
+
+      setError(backendMessage);
     } finally {
       setLoading(false);
       submitLock.current = false; 
@@ -209,7 +224,7 @@ export const FormGestion: React.FC<FormGestionProps> = ({
 
   return (
     <div className="flex justify-center items-center">
-      <div className="rounded-2xl w-[420px] bg-white shadow-md p-6">
+      <div className="w-[420px] p-6">
         <Typography
           variant="h6"
           className="text-center font-semibold text-gray-800 mb-6"
@@ -224,7 +239,7 @@ export const FormGestion: React.FC<FormGestionProps> = ({
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-
+        {/*
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Código de Contrato
@@ -242,31 +257,60 @@ export const FormGestion: React.FC<FormGestionProps> = ({
               placeholder="Ejemplo: CON15"
             />
           </div>
-
+        */}
           {/* Empleado */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Empleado *
-            </label>
-            <select
-              value={formData.empleadoCodigo}
-              onChange={(e) =>
-                setFormData({ ...formData, empleadoCodigo: e.target.value })
-              }
-              disabled={isEdit}
-              className={`w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 ${
-                isEdit ? "bg-gray-100 cursor-not-allowed" : ""
-              }`}
-              required
-            >
-              <option value="">Seleccionar empleado</option>
-              {empleados.map((emp) => (
-                <option key={emp.Codigo} value={emp.Codigo}>
-                  {emp.EmpleadoNombre} {emp.EmpleadoApellido}
-                </option>
-              ))}
-            </select>
-          </div>
+          {!isEdit ? (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Empleado *
+                  </label>
+                    <select
+                      value={formData.empleadoCodigo}
+                      onChange={(e) =>
+                        setFormData({ ...formData, empleadoCodigo: e.target.value })
+                      }
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 
+                                focus:ring-2 focus:ring-blue-400 bg-white"
+                      required
+                    >
+                      <option value="">Seleccionar empleado</option>
+                      {empleados.map((emp) => (
+                        <option key={emp.Codigo} value={emp.Codigo}>
+                          {emp.Descripcion}
+                        </option>
+                      ))}
+                    </select>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Código Empleado
+                    </label>
+                      <input
+                        type="text"
+                        value={formData.empleadoCodigo}
+                        disabled
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2 
+                                  bg-gray-200 text-gray-700 cursor-not-allowed"
+                      />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Nombre Completo
+                    </label>
+                      <input
+                        type="text"
+                        disabled
+                        value={`${contratoToEdit?.EmpleadoNombre || ""} ${contratoToEdit?.EmpleadoApellido || ""}`}
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2 
+                                  bg-gray-200 text-gray-700 cursor-not-allowed"
+                      />
+                  </div>
+                </div>
+              )}
+
 
           {/* Tipo contrato */}
           <div>
@@ -374,7 +418,7 @@ export const FormGestion: React.FC<FormGestionProps> = ({
             <input
               type="number"
               value={formData.salario}
-              min="1025"
+              min="1130"
               step="0.01"
               onChange={(e) =>
                 setFormData({ ...formData, salario: e.target.value })
@@ -383,7 +427,7 @@ export const FormGestion: React.FC<FormGestionProps> = ({
               required
             />
           </div>
-
+{/*
           <div className="flex gap-2">
             <div className="w-1/2">
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -416,7 +460,7 @@ export const FormGestion: React.FC<FormGestionProps> = ({
               />
             </div>
           </div>
-
+                  */}
           {/* Motivo de modificación */}
           {isEdit && (
             <div>

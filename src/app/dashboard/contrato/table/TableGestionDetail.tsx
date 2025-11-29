@@ -10,6 +10,8 @@ import {
 import { Edit, Delete, Visibility, Pause, PlayArrow } from "@mui/icons-material";
 import { TableGeneric } from "@/components/TableGeneric";
 import { ContratoData } from "../hooks/useGestion";
+import { toast } from "react-toastify";
+
 
 interface TableGestionDetailProps {
   contratos: ContratoData[];
@@ -22,7 +24,15 @@ interface TableGestionDetailProps {
   tienePermisosElevados: boolean;
   getEstadoTexto: (estadoCodigo: string) => string;
   getEstadoColor: (estadoCodigo: string) => "success" | "warning" | "error" | "default";
+
+  openModalAccion: boolean;
+  setOpenModalAccion: (open: boolean) => void;
+  accionTitulo: string;
+  setAccionTitulo: (titulo: string) => void;
+  accionCallback: any;
+  setAccionCallback: (callback: any) => void;
 }
+
 
 export const TableGestionDetail: React.FC<TableGestionDetailProps> = ({
   contratos,
@@ -35,7 +45,21 @@ export const TableGestionDetail: React.FC<TableGestionDetailProps> = ({
   tienePermisosElevados,
   getEstadoTexto,
   getEstadoColor,
+
+  openModalAccion,
+  setOpenModalAccion,
+  accionTitulo,
+  setAccionTitulo,
+  accionCallback,
+  setAccionCallback,
 }) => {
+
+
+  const abrirAccion = (titulo, callback) => {
+    setAccionTitulo(titulo);
+    setAccionCallback(() => callback);
+    setOpenModalAccion(true);
+  };
 
   const columns = [
     { field: "codigo", header: "Código" },
@@ -90,23 +114,29 @@ export const TableGestionDetail: React.FC<TableGestionDetailProps> = ({
 
     return(
     <div className="flex gap-1 justify-center">
-      <Tooltip title="Ver detalle">
+      {/* <Tooltip title="Ver detalle">
         <IconButton color="primary" onClick={() => {
           setSelectedContrato(row._item);
           setOpenModal(true);
         }} size="small">
           <Visibility />
         </IconButton>
-      </Tooltip>
+      </Tooltip> */}
 
       {tienePermisosElevados && (
         <>
           <Tooltip title="Editar">
             <IconButton
               color="secondary"
-              onClick={() => onEditContrato(row._item)}
               size="small"
-              disabled={row._item.ContratoEstado === 'F'}
+              onClick={() => {
+                if (estado === "I" || estado === "S") {
+                  toast.error("No se puede editar el contrato porque está suspendido o inactivo");
+                  return;
+                }
+                onEditContrato(row._item);
+              }}
+              disabled={row._item.ContratoEstado === "F"} 
             >
               <Edit />
             </IconButton>
@@ -116,10 +146,11 @@ export const TableGestionDetail: React.FC<TableGestionDetailProps> = ({
             <Tooltip title="Suspender">
               <IconButton
                 color="warning"
-                onClick={() => {
-                  const motivo = prompt("Ingrese el motivo de la suspensión:");
-                  if (motivo && motivo.trim()) onSuspendContrato(row._item.ContratoCodigo, motivo.trim());
-                }}
+                onClick={() =>
+                  abrirAccion("Suspender contrato", (motivo) =>
+                    onSuspendContrato(row._item.ContratoCodigo, motivo)
+                  )
+                }
                 size="small"
               >
                 <Pause />
@@ -131,10 +162,11 @@ export const TableGestionDetail: React.FC<TableGestionDetailProps> = ({
             <Tooltip title="Reactivar">
               <IconButton
                 color="success"
-                onClick={() => {
-                  const motivo = prompt("Ingrese el motivo de la reactivación:");
-                  if (motivo && motivo.trim()) onReactivateContrato(row._item.ContratoCodigo, motivo.trim());
-                }}
+                onClick={() =>
+                  abrirAccion("Reactivar contrato", (motivo) =>
+                    onReactivateContrato(row._item.ContratoCodigo, motivo)
+                  )
+                }
                 size="small"
               >
                 <PlayArrow />
@@ -146,10 +178,15 @@ export const TableGestionDetail: React.FC<TableGestionDetailProps> = ({
             <Tooltip title="Activar contrato">
               <IconButton
                 color="success"
-                onClick={() => {
-                  const motivo = prompt("Ingrese el motivo de la activación:");
-                  if (motivo && motivo.trim())
-                    onReactivateContrato(row._item.ContratoCodigo, motivo.trim());
+                 onClick={() => {
+                  if (tienePermisosElevados) {
+                    toast.error("Solo se puede reactivar contratos suspendidos");
+                    return;
+                  }
+
+                  // const motivo = prompt("Ingrese el motivo de la activación:");
+                  // if (motivo && motivo.trim())
+                  //   onReactivateContrato(row._item.ContratoCodigo, motivo.trim());
                 }}
                 size="small"
               >
@@ -161,9 +198,13 @@ export const TableGestionDetail: React.FC<TableGestionDetailProps> = ({
           <Tooltip title="Dar de baja">
             <IconButton
               color="error"
-              onClick={() => {
-                const motivo = prompt("Ingrese el motivo de la baja:");
-                if (motivo && motivo.trim()) onDeleteContrato(row._item.ContratoCodigo, motivo.trim());
+              onClick={async () => {
+                try {
+                  await onDeleteContrato(row._item.ContratoCodigo, null); // sin motivo
+                  // toast.success("Se eliminó correctamente");
+                } catch (error) {
+                  toast.error("No se pudo eliminar el contrato");
+                }
               }}
               size="small"
               disabled={['F', 'I'].includes(row._item.ContratoEstado)}

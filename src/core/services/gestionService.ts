@@ -32,12 +32,11 @@ export interface GestionData {
   UsuarioCodigo: string;
   ContratoFechaInicio: string | Date; 
   ContratoFechaFin: string | Date;
-  ContratoSalario: number;                   
-  ContratoBonificacion: number;              
-  ContratoDescuento: number;
+  ContratoSalario: number;      
   ContratoEstado: string;
   ContratoFechaRegistro?: string | Date;
   ContratoFechaModificacion?: string | Date;
+  motivo:string;
 }
 
 
@@ -96,7 +95,7 @@ export const deleteContratoLaboralService = async (contratoCodigo: string) => {
       url: `/ContratoLaboral/Eliminar?contratoCodigo=${contratoCodigo}`,
       method: "delete",
     });
-    toast.success("Contrato laboral eliminado con éxito");
+    // toast.success("Contrato laboral eliminado con éxito");
     return data;
   } catch (error: any) {
     console.error(" Error al eliminar contrato:", error);
@@ -144,4 +143,29 @@ export const getCatalogoService = async <T extends CatalogoBase>(
 export const getTipoContratoService = () => getCatalogoService("TipoContrato");
 export const getModalidadService = () => getCatalogoService("Modalidad");
 export const getJornadaService = () => getCatalogoService("Jornada");
-export const getEmpleadoService = () => getCatalogoService("ListarPorEmpleadoCodigo");
+// export const getEmpleadoService = () => getCatalogoService("EmpleadosSinContrato");
+
+
+export interface EmpleadoData {
+  EmpleadoCodigo: string;
+  EmpleadoNombre: string;
+}
+
+export const getEmpleadoService = async () =>
+  (await customRequest<{}, ApiResponse<EmpleadoData>>({
+    url: "/ContratoLaboral/EmpleadosSinContrato",
+    method: "get",
+  })).data;
+
+  export interface HistorialContrato {
+  ContratoCodigo: string;
+  Detalle: string;
+  Motivo: string;
+  HistorialFechaF: string;
+}
+
+export const getHistorialContratoService = async () =>
+  (await customRequest<{}, ApiResponse<HistorialContrato>>({
+    url: "/ContratoLaboral/DetallesHistorial",
+    method: "get",
+  })).data;

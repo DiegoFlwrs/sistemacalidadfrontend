@@ -10,12 +10,16 @@ import { TableGestionDetail } from "./table/TableGestionDetail";
 import { Search, RestartAlt, Warning } from "@mui/icons-material";
 import Pagination from "@/components/Pagination";
 import { FormGestion } from "./form/formGestion";
+import { FormAccionContrato } from "./form/formAccionContrato";
+import { HistorialContratoModal } from "./form/historialCon";
 
 export default function GestionContratosPage() {
   
   const {
     openModal,
     setOpenModal,
+    openModalAccion,
+    setOpenModalAccion,
     openModalForm,
     setOpenModalForm,
     contratos,
@@ -51,7 +55,13 @@ export default function GestionContratosPage() {
     tiposContrato,
     modalidadesPago,
     jornadasLaborales,
-    empleados
+    empleados,
+    accionTitulo,
+    accionCallback,
+    setAccionTitulo,
+    setAccionCallback,
+    historialContrato,
+    obtenerHistorialContrato
   } = useGestion();
 
   //Comentario
@@ -60,7 +70,7 @@ export default function GestionContratosPage() {
     { value: "", label: "Todos los estados" },
     { value: "A", label: "Vigente" },
     { value: "S", label: "Suspendido" },
-    { value: "F", label: "Finalizado" },
+    // { value: "F", label: "Finalizado" },
     { value: "I", label: "Inactivo" },
   ];
 
@@ -128,6 +138,14 @@ export default function GestionContratosPage() {
           </Button>
         </div>
 
+        <Button
+          variant="outlined"
+          size="small"
+          onClick={obtenerHistorialContrato}
+        >
+          Ver historial
+        </Button>
+
         <Typography fontSize={20} fontWeight={600} mb={3}>
           Filtros de búsqueda
         </Typography>
@@ -156,10 +174,13 @@ export default function GestionContratosPage() {
           <Dropdown
             value={tipoContratoFilter}
             onChange={(e) => setTipoContratoFilter(e.target.value)}
-            data={tiposContrato.map(tipo => ({
-              value: tipo.Codigo,
-              label: tipo.Descripcion
-            }))}
+            data={[
+              { value: "", label: "Todos los tipos" },
+              ...tiposContrato.map(tipo => ({
+                value: tipo.Codigo,
+                label: tipo.Descripcion
+              }))
+            ]}
             placeholder="Filtrar por tipo"
             borderRadius="10px"
             borderColor="#d5d7da"
@@ -172,10 +193,10 @@ export default function GestionContratosPage() {
           </Typography>
           
           <button
-            className={filtro ? "text-red-800" : "text-gray-500"}
+            className="text-gray-500 hover:text-red-600 transition-colors duration-300"
             onClick={handleResetFilters}
           >
-            <RestartAlt />
+            <RestartAlt className="transition-transform duration-500 hover:rotate-90" />
           </button>
         </div>
       </Paper>
@@ -197,6 +218,13 @@ export default function GestionContratosPage() {
         tienePermisosElevados={tienePermisosElevados}
         getEstadoTexto={getEstadoTexto}
         getEstadoColor={getEstadoColor}
+
+        openModalAccion={openModalAccion}
+        setOpenModalAccion={setOpenModalAccion}
+        accionTitulo={accionTitulo}
+        setAccionTitulo={setAccionTitulo}
+        accionCallback={accionCallback}
+        setAccionCallback={setAccionCallback}
       />
 
       <Pagination
@@ -206,14 +234,14 @@ export default function GestionContratosPage() {
         onPageChange={setPage}
       />
 
-      <ModalComponent open={openModal} setOpen={setOpenModal} width={600}>
+      {/* <ModalComponent open={openModal} setOpen={setOpenModal} width={600}>
         <DetalleContratoLaboral
           data={selectedContrato}
           getEstadoTexto={getEstadoTexto}
         />
-      </ModalComponent>
+      </ModalComponent> */}
 
-      <ModalComponent open={openModalForm} setOpen={setOpenModalForm} width={700}>
+      <ModalComponent open={openModalForm} setOpen={setOpenModalForm} width={400}>
         <FormGestion 
           isEdit={isEdit} 
           setOpenModalForm={setOpenModalForm} 
@@ -227,6 +255,24 @@ export default function GestionContratosPage() {
           jornadasLaborales={jornadasLaborales}
         />
       </ModalComponent>
+
+      <ModalComponent open={openModalAccion} setOpen={setOpenModalAccion}>
+        <FormAccionContrato
+          setOpen={setOpenModalAccion}
+          titulo={accionTitulo}
+          onConfirm={(motivo) => {
+            if (accionCallback) accionCallback(motivo);
+            setOpenModalAccion(false);
+          }}
+        />
+      </ModalComponent>
+
+      <HistorialContratoModal
+        open={openModal}
+        setOpen={setOpenModal}
+        historialContrato={historialContrato}
+      />
+
     </div>
   );
 }
