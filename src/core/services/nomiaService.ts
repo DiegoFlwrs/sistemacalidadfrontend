@@ -138,6 +138,7 @@ export const getDepartamentosService = async (
 export interface PeriodosData {
     PeriodoCodigo: string;
     PeriodoDescripcion: string;
+    PeriodoEstado: string;
 }
 
 export interface PeriodosResponse {

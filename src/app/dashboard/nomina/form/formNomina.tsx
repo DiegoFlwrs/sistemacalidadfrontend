@@ -84,10 +84,12 @@ export const FormNomina = ({
               data={periodo.map((p) => ({
                 value: p.PeriodoCodigo,
                 label: p.PeriodoDescripcion,
+                estado: p.PeriodoEstado
               }))}
               placeholder="Seleccionar Periodo"
               borderRadius="10px"
               borderColor="#d5d7da"
+              estadoKey="estado"
             />
             {periodoFiltro && (
               <div className="text-xs text-blue-600 mt-3">

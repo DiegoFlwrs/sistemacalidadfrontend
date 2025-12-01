@@ -10,6 +10,7 @@ import {
 interface DropdownOption {
   value: string | number;
   label: string | number;
+  [key: string]: any;
 }
 
 interface DropdownProps {
@@ -21,6 +22,7 @@ interface DropdownProps {
   borderColor?: string;
   background?: string;
   fullWidth?: boolean;
+  estadoKey?: string;
 }
 
 export const Dropdown: React.FC<DropdownProps> = ({
@@ -31,7 +33,8 @@ export const Dropdown: React.FC<DropdownProps> = ({
   borderRadius = "8px",
   borderColor = "#ccc",
   background = "white",
-  fullWidth = true
+  fullWidth = true,
+  estadoKey 
 }) => {
   return (
     <FormControl fullWidth={fullWidth} size="small">
@@ -52,11 +55,15 @@ export const Dropdown: React.FC<DropdownProps> = ({
           }
         }}
       >
-        {data.map((option) => (
-          <MenuItem key={option.value} value={option.value}>
-            {option.label}
-          </MenuItem>
-        ))}
+        {data.map((option) => {
+          const isDisabled = estadoKey ? option[estadoKey] !== "A" : false;
+          return (
+            <MenuItem key={option.value} value={option.value} disabled={isDisabled} >
+              {option.label}
+            </MenuItem>
+          )
+        }
+        )}
       </Select>
     </FormControl>
   );
