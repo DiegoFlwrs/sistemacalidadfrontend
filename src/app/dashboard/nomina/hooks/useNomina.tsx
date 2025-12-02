@@ -1,45 +1,19 @@
 import {
-  AnioData,
-  ContratosData,
-  DepartamentoData,
-  getAniosService,
-  getContratosService,
-  getDepartamentosService,
-  getMesService,
   getPeriodosService,
-  MesData,
   NominaData,
-  NominaResponse,
   PeriodosData,
   postAgregarNominaService,
-  postEditarNominaService,
   postListaNominaService,
 } from "@/core/services/nomiaService";
-import { postReporteNominaPdfService } from "@/core/services/reporteService";
-import { downloadBlob } from "@/utils/helpers";
 import { useEffect, useState } from "react";
-import { toast } from "react-toastify";
 
 export const useNomina = () => {
-  const [openModal, setOpenModal] = useState(false);
   const [openModalForm, setOpenModalForm] = useState(false);
-
-  const [openModalFormReporte, setOpenModalFormReporte] = useState(false);
   const [nomina, setNomina] = useState<NominaData[] | null>(null);
-
-  const [mes, setMes] = useState<number | null>(null);
-  const [anio, setAnio] = useState<number | null>(null);
-  const [departamento, setDepartamento] = useState<string | null>(null);
-  const [estado, setEstado] = useState<string | null>(null);
-  const [selectedNomina, setSelectedNomina] = useState<any>(null);
-  const [empleadoNombre, setEmpleadoNombre] = useState<string>("");
-  const [empleadoApellido, setEmpleadoApellido] = useState<string>("");
-  const [totalItems, setTotalItems] = useState<number>(0);
-
   const [periodo, setPeriodo] = useState<PeriodosData[]>([]);
-  const [contratos, setContratos] = useState<ContratosData[]>([]);
-  const [nominaToEdit, setNominaToEdit] = useState<NominaData | null>(null);
   const [reloadData, setReloadData] = useState(false);
+
+  const [periodoFiltro, setPeriodoFiltro] = useState<string>("");
 
   const obtenerPeriodos = async () => {
     try {
@@ -54,113 +28,14 @@ export const useNomina = () => {
     }
   };
 
-  const obtenerContratos = async () => {
-    try {
-      const response = await getContratosService();
-      if (response?.data) {
-        setContratos(response.data);
-      } else {
-        console.error("Error: No se recibió data en la respuesta");
-      }
-    } catch (error) {
-      console.error("Error al consumir el servicio:", error);
-    }
-  };
-
-  const [filtro, setFiltro] = useState<boolean>(false);
-
-  const [page, setPage] = useState(1);
-  const size = 5;
-
-  const [isEdit, setIsEdit] = useState(false);
-
-  const handleChangeMes = (event: any) => {
-    setMes(event.target.value);
-    setFiltro(true);
-  };
-  const handleChangeAnio = (event: any) => {
-    setAnio(event.target.value);
-    setFiltro(true);
-  };
-  const handleChangeDepartamento = (event: any) => {
-    setDepartamento(event.target.value);
-    setFiltro(true);
-  };
-  const handleChangeEstado = (event: any) => {
-    setEstado(event.target.value);
-    setFiltro(true);
-  };
-  function handleResetFilters() {
-    setMes(null);
-    setAnio(null);
-    setDepartamento(null);
-    setEstado(null);
-    setEmpleadoNombre("");
-    setEmpleadoApellido("");
-    setFiltro(false);
-  }
-
   const consumirServicio = async () => {
     try {
       const response = await postListaNominaService({
-        periodoAnio: anio,
-        periodoMes: mes,
-        nominaEstado: estado,
-        empleadoNombre: empleadoNombre,
-        empleadoApellido: empleadoApellido,
-        departamentoCodigo: departamento,
-        pageNumber: page,
-        pageSize: 5,
+        CodigoPeriodo: periodoFiltro
       });
 
       if (response?.data) {
         setNomina(response.data);
-        setTotalItems(response.TotalRows);
-      } else {
-        console.error("Error: No se recibió data en la respuesta");
-      }
-    } catch (error) {
-      console.error("Error al consumir el servicio:", error);
-    }
-  };
-
-  const [anios, setAnios] = useState<AnioData[]>([]);
-
-  const obtenerAnios = async () => {
-    try {
-      const response = await getAniosService();
-      if (response?.data) {
-        setAnios(response.data);
-      } else {
-        console.error("Error: No se recibió data en la respuesta");
-      }
-    } catch (error) {
-      console.error("Error al consumir el servicio:", error);
-    }
-  };
-
-  const [meses, setMeses] = useState<MesData[]>([]);
-
-  const obtenerMeses = async () => {
-    try {
-      const response = await getMesService();
-      if (response?.data) {
-        setMeses(response.data);
-      } else {
-        console.error("Error: No se recibió data en la respuesta");
-      }
-    } catch (error) {
-      console.error("Error al consumir el servicio:", error);
-    }
-  };
-
-  const [departamentos, setDepartamentos] = useState<DepartamentoData[]>([]);
-
-  const obtenerDepartamentos = async () => {
-    try {
-      const response = await getDepartamentosService();
-      if (response?.data) {
-        setDepartamentos(response.data);
       } else {
         console.error("Error: No se recibió data en la respuesta");
       }
@@ -182,89 +57,23 @@ export const useNomina = () => {
     }
   };
 
-  const handleEditNomina = (nomina: NominaData) => {
-    setNominaToEdit(nomina);
-    setIsEdit(true);
-    setOpenModalForm(true);
-  };
+  useEffect(() => {
+    consumirServicio();
+    obtenerPeriodos();
+  }, [reloadData]);
 
   useEffect(() => {
     consumirServicio();
     obtenerPeriodos();
-  }, [anio, mes, departamento, estado, empleadoNombre, empleadoApellido, page, reloadData]);
-
-  useEffect(() => {
-    consumirServicio();
-    obtenerAnios();
-    obtenerMeses();
-    obtenerDepartamentos();
-    obtenerPeriodos();
-    obtenerContratos();
   }, []);
 
-  const handleDescargar = async (PeriodoCodigo:string) => {
-  try {
-    const requestBody = {
-      PeriodoCodigo: PeriodoCodigo,
-      DepartamentoCodigo: null,
-      CargoCodigo: null,
-      TipoContratoCodigo: null,
-    };
-
-    const pdfBlob = await postReporteNominaPdfService(requestBody);
-
-    downloadBlob(
-      pdfBlob,
-      `Reporte_Nomina_${new Date().toISOString()}.pdf`
-    );
-
-    toast.success("Reporte descargado correctamente");
-  } catch (error: any) {
-    toast.error(error.message || "Error al descargar el reporte");
-    console.error(error);
-  }
-};
-
-
   return {
-    openModal,
-    setOpenModal,
     nomina,
-    anios,
-    meses,
-    departamentos,
-    mes,
-    anio,
-    departamento,
-    estado,
-    handleChangeAnio,
-    handleChangeMes,
-    handleChangeDepartamento,
-    handleChangeEstado,
-    handleResetFilters,
-    empleadoNombre,
-    setSelectedNomina,
-    selectedNomina,
-    empleadoApellido,
-    setEmpleadoApellido,
-    setEmpleadoNombre,
-    filtro,
-    size,
-    page,
-    totalItems,
-    setPage,
     openModalForm,
     setOpenModalForm,
-    isEdit,
-    setIsEdit,
-    contratos,
     periodo,
     AgregarNominaServicio,
-    handleEditNomina,
-    nominaToEdit,
-    setNominaToEdit,
-    handleDescargar,
-    openModalFormReporte, 
-    setOpenModalFormReporte
+    periodoFiltro,
+    setPeriodoFiltro
   };
 };

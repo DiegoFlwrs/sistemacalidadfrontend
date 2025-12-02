@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 import { Typography } from "@mui/material";
 import { Dropdown } from "@/components/Dropdown";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import AssignmentIcon from "@mui/icons-material/Assignment";
+import { toast } from "react-toastify";
 
 interface FormNominaProps {
   setOpenModalForm: (open: boolean) => void;
@@ -12,16 +13,17 @@ interface FormNominaProps {
   AgregarNominaServicio: (
     PeriodoCodigo: string
   ) => Promise<void>;
+  periodoFiltro: string;
+  setPeriodoFiltro: (codigo: string) => void;
 }
 
 export const FormNomina = ({
   setOpenModalForm,
   periodo,
-  setAnio,
-  setMes,
+  periodoFiltro,
+  setPeriodoFiltro,
   AgregarNominaServicio
 }: FormNominaProps) => {
-  const [periodoFiltro, setPeriodoFiltro] = useState<string>("");
 
   const getPeriodoDescripcion = (codigo: string) => {
     const periodoEncontrado = periodo.find((p) => p.PeriodoCodigo === codigo);
@@ -32,17 +34,9 @@ export const FormNomina = ({
 
   const handleProcesarNomina = () => {
     if (!periodoFiltro) {
-      alert("Seleccione un periodo para procesar la nómina.");
+      toast.info("Seleccione un periodo para procesar la nómina.");
       return;
     }
-    // // Extraer año y mes del código de periodo
-    // const periodoSeleccionado = periodo.find((p) => p.PeriodoCodigo === periodoFiltro);
-    // if (periodoSeleccionado) {
-    //   const anio = parseInt(periodoSeleccionado.PeriodoCodigo.substring(0, 4));
-    //   const mes = parseInt(periodoSeleccionado.PeriodoCodigo.substring(4, 6));
-    //   setAnio(anio);
-    //   setMes(mes);
-    // }
 
     AgregarNominaServicio(
       periodoFiltro
@@ -52,7 +46,7 @@ export const FormNomina = ({
 
   return (
     <div className="flex justify-center items-center min-h-[300px]">
-      <div className="bg-white p-8 w-full max-w-md rounded-xl">
+      <div className="bg-white px-8 pb-5 w-full max-w-md rounded-xl">
         <div className="flex flex-col items-center mb-6">
           <AssignmentIcon style={{ fontSize: 40, color: "#1976d2" }} />
           <Typography
@@ -105,13 +99,6 @@ export const FormNomina = ({
               className="flex-1 bg-gradient-to-r from-blue-500 to-blue-700 text-white font-semibold py-2 rounded-lg hover:from-blue-600 hover:to-blue-800 transition-all"
             >
               Procesar Nómina
-            </button>
-            <button
-              type="button"
-              onClick={() => setOpenModalForm(false)}
-              className="px-4 bg-gray-400 text-white font-semibold py-2 rounded-lg hover:bg-gray-500 transition-all"
-            >
-              Cancelar
             </button>
           </div>
         </form>

@@ -6,29 +6,21 @@ import { toast } from "react-toastify";
 
 export interface NominaData {
     NominaCodigo: string;
-    PeriodoCodigo: string;
-    PeriodoAnio: number;
-    PeriodoMes: number;
-    PeriodoInicio: string;  
-    PeriodoFin: string;     
-    ContratoCodigo: string;
-    EmpleadoCodigo: string;
-    EmpleadoApellido: string;
-    EmpleadoNombre: string;
-    CargoNombre: string;
-    DepartamentoNombre: string;
-    TipoContratoDescripcion: string;
+    Nombre: string;
+    NominaHorasExtras: number | null;
+    NominaMontoHorasExtras: number | null;
     ContratoSalario: number;
-    NominaHorasExtras: number;
-    NominaBonificacion: number;
-    NominaDescuentos: number;
-    NominaTotalIngresos: number;
-    NominaTotalDescuentos: number;
-    NominaSueldoNeto: number;
-    NominaFechaProcesamiento: string;  
-    NominaEstado: string;
-    EstadoNominaNombre: string;
+    NominaBonificacion: number | null;
+    NominaAsignacionFamiliar: number | null;
+    NominaTotalIngresos: number | null;
+    NominaDescuentoPension: number | null;
+    NominaDescuentoIR5ta: number | null;
+    NominaAporteEssalud: number | null;
+    NominaOtrosDescuentos: number | null;
+    NominaTotalDescuentos: number | null;
+    NominaSueldoNeto: number | null;
 }
+
 
 export interface NominaResponse {
     statusCode: number;
@@ -39,14 +31,7 @@ export interface NominaResponse {
 }
 
 export interface NominaRequest {
-  periodoAnio: number | null;
-  periodoMes: number | null;
-  nominaEstado: string | null;
-  empleadoNombre: string | null;
-  empleadoApellido: string | null;
-  departamentoCodigo: string | null;
-  pageNumber: number;
-  pageSize: number;
+  CodigoPeriodo: string | null;
 }
 
 export const postListaNominaService = async (

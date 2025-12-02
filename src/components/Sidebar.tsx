@@ -7,7 +7,7 @@ export default function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="w-60 bg-gray-800 text-white h-screen p-4">
+    <aside className="w-60 bg-[#223F65] text-white h-screen p-4">
       <h1 className="text-xl font-bold py-5">Sistema de Nomina</h1> 
       <nav className="space-y-2">
         {DASHBOARD_ROUTES.map((route) => (
