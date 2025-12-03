@@ -87,27 +87,7 @@ export default function GestionContratosPage() {
 
   return (
     <div className="pt-6">
-      {contratosProximosVencer.length > 0 && (
-        <Alert 
-          severity="warning" 
-          icon={<Warning />}
-          className="mb-4"
-        >
-          <Typography fontWeight="bold">
-            Contratos próximos a vencer ({contratosProximosVencer.length})
-          </Typography>
-          <ul className="mt-1">
-            {contratosProximosVencer.slice(0, 3).map(contrato => (
-              <li key={contrato.codigo}>
-                {contrato.codigo} - {contrato.empleadoCodigo} - Vence: {new Date(contrato.fechaFin).toLocaleDateString()}
-              </li>
-            ))}
-            {contratosProximosVencer.length > 3 && (
-              <li>... y {contratosProximosVencer.length - 3} más</li>
-            )}
-          </ul>
-        </Alert>
-      )}
+      
 
       {loading && (
         <Alert severity="info" className="mb-4">
