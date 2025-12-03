@@ -32,13 +32,10 @@ export default function ReportePage() {
 
   const handleGenerarReporte = async (PeriodoCodigo: string) => {
     try {
-      // Generar PDF
       const blob = await postReporteNominaPdfService({ PeriodoCodigo });
       const url = window.URL.createObjectURL(blob);
       setPdfUrl(url);
       toast.success("PDF generado exitosamente");
-
-      // Cargar nóminas del periodo
       const nomRes = await postListaNominaService({ CodigoPeriodo: PeriodoCodigo });
       setNominas(nomRes?.data ?? []);
     } catch (error: any) {
