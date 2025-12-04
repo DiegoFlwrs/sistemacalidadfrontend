@@ -203,9 +203,9 @@ export const FormGestion: React.FC<FormGestionProps> = ({
       // resetForm();
     } catch (error: any) {
         const backendMessage =
-        err.response?.data?.message ||
-        err.response?.data?.errors ||
-        err.message ||
+        error.response?.data?.message ||
+        error.response?.data?.errors ||
+        error.message ||
         "Error al guardar el contrato";
 
       setError(backendMessage);
