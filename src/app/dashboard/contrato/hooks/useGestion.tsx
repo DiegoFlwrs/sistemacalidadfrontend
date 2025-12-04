@@ -260,8 +260,7 @@ const obtenerHistorialContrato = async () => {
         setReloadData(prev => !prev);
       }
     } catch (error: any) {
-       
-        throw new Error(error.message);
+       throw error.response;
     }
   };
 
@@ -293,8 +292,8 @@ const obtenerHistorialContrato = async () => {
         setReloadData(!reloadData);
       }
     } catch (err: any) {
-      console.error("Error al actualizar contrato:", err);
-      toast.error(err?.message || "Error al actualizar contrato");
+      throw err.response;
+
     }
   };
 

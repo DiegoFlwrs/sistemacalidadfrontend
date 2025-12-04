@@ -84,8 +84,6 @@ export const putActualizarContratoLaboralService = async (
     return data;
   } catch (error: any) {
     console.error(" Error en actualización:", error);
-    toast.error(error?.response?.data?.message || "Error al actualizar el contrato laboral");
-    throw error;
   }
 };
 
