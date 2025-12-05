@@ -1,9 +1,6 @@
-// reporte/form/DetalleReporte.tsx
 "use client";
 import React from "react";
-import { Box, Typography, Paper, Chip } from "@mui/material";
-import { ESTADOS_NOMINA, MESES } from "@/utils/constanst";
-import { getLabel, getEstadoColor, formatDateTime } from "@/utils/helpers";
+import { Box, Typography, Paper } from "@mui/material";
 
 interface DetalleReporteProps {
   data?: any;
@@ -24,38 +21,79 @@ export const DetalleReporte = ({ data }: DetalleReporteProps) => {
         Detalle de Reporte
       </Typography>
 
-      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 3, justifyContent: "space-between", mb: 3 }}>
+      <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
         <Box>
           <Typography variant="subtitle1" color="text.secondary"><b>Código</b></Typography>
-          <Typography>{data.NominaCodigo}</Typography>
+          <Typography>{data.Codigo}</Typography>
         </Box>
+
         <Box>
           <Typography variant="subtitle1" color="text.secondary"><b>Empleado</b></Typography>
-          <Typography>{data.EmpleadoApellido} {data.EmpleadoNombre}</Typography>
+          <Typography>{data.Empleado}</Typography>
         </Box>
+
         <Box>
-          <Typography variant="subtitle1" color="text.secondary"><b>Departamento</b></Typography>
-          <Typography>{data.DepartamentoNombre}</Typography>
+          <Typography variant="subtitle1" color="text.secondary"><b>Salario Base</b></Typography>
+          <Typography>S/ {data.SalarioBase}</Typography>
         </Box>
+
         <Box>
-          <Typography variant="subtitle1" color="text.secondary"><b>Cargo</b></Typography>
-          <Typography>{data.CargoNombre}</Typography>
+          <Typography variant="subtitle1" color="text.secondary"><b>Horas Extras</b></Typography>
+          <Typography>{data.HorasExtras}</Typography>
+        </Box>
+
+        <Box>
+          <Typography variant="subtitle1" color="text.secondary"><b>Monto Horas Extras</b></Typography>
+          <Typography>S/ {data.MontoHorasExtras}</Typography>
+        </Box>
+
+        <Box>
+          <Typography variant="subtitle1" color="text.secondary"><b>Bonificación</b></Typography>
+          <Typography>S/ {data.Bonificacion}</Typography>
+        </Box>
+
+        <Box>
+          <Typography variant="subtitle1" color="text.secondary"><b>Asignación Familiar</b></Typography>
+          <Typography>S/ {data.AsignacionFamiliar}</Typography>
+        </Box>
+
+        <Box>
+          <Typography variant="subtitle1" color="text.secondary"><b>Total Ingresos</b></Typography>
+          <Typography>S/ {data.TotalIngresos}</Typography>
+        </Box>
+
+        <Box>
+          <Typography variant="subtitle1" color="text.secondary"><b>Desc. Pensión</b></Typography>
+          <Typography>S/ {data.DescPension}</Typography>
+        </Box>
+
+        <Box>
+          <Typography variant="subtitle1" color="text.secondary"><b>IR 5ta</b></Typography>
+          <Typography>S/ {data.IR5ta}</Typography>
+        </Box>
+
+        <Box>
+          <Typography variant="subtitle1" color="text.secondary"><b>Essalud</b></Typography>
+          <Typography>S/ {data.Essalud}</Typography>
+        </Box>
+
+        <Box>
+          <Typography variant="subtitle1" color="text.secondary"><b>Otros Desc.</b></Typography>
+          <Typography>S/ {data.OtrosDesc}</Typography>
+        </Box>
+
+        <Box>
+          <Typography variant="subtitle1" color="text.secondary"><b>Total Descuentos</b></Typography>
+          <Typography>S/ {data.TotalDescuentos}</Typography>
+        </Box>
+
+        <Box>
+          <Typography variant="subtitle1" color="text.secondary"><b>Sueldo Neto</b></Typography>
+          <Typography sx={{ color: "green", fontWeight: "bold" }}>
+            S/ {data.SueldoNeto}
+          </Typography>
         </Box>
       </Box>
-
-      <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
-        <Typography variant="body1" color="text.secondary" fontWeight={500}>
-          Estado:  
-          <Chip label={getLabel(ESTADOS_NOMINA, data.NominaEstado)} color={getEstadoColor(data.NominaEstado)} />
-        </Typography>
-        <Typography variant="body1" color="text.secondary" fontWeight={500}>
-          <b>Periodo:</b> {getLabel(MESES, data.PeriodoMes)} {data.PeriodoAnio}
-        </Typography>
-      </Box>
-
-      <Typography variant="body2" display="block" mt={1.5} textAlign="right" color="text.secondary">
-        <b>Procesado:</b> {formatDateTime(data.NominaFechaProcesamiento)}
-      </Typography>
     </Paper>
   );
 };

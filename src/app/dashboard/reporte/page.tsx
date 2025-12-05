@@ -1,28 +1,36 @@
 "use client";
 import { useEffect, useState } from "react";
-import { getPeriodosService, postListaNominaService } from "@/core/services/nomiaService";
-import { postReporteNominaPdfService } from "@/core/services/reporteService";
+import {
+  getPeriodosService,
+  getDepartamentosService,
+} from "@/core/services/nomiaService"; // solo para combos
+import {
+  getReporteNominaService,
+  postReporteNominaPdfService,
+} from "@/core/services/reporteService"; // servicios de Reportes
 import { toast } from "react-toastify";
-import { ModalComponent } from "@/components/Modal";
 import { FormReporte } from "./form/FormReporte";
-import { DetalleReporte } from "./form/DetalleReporte";
-import TableNominaDetail from "../nomina/table/TableNominaDetail";
+import TableReporteDetail from "./table/TableReporteDetail";
 import { Paper, Typography } from "@mui/material";
 
 export default function ReportePage() {
   const [periodos, setPeriodos] = useState<any[]>([]);
+  const [departamentos, setDepartamentos] = useState<any[]>([]);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [nominas, setNominas] = useState<any[]>([]);
-  const [selectedNomina, setSelectedNomina] = useState<any>(null);
-  const [openModal, setOpenModal] = useState(false);
 
+  // 🔹 Estado para filtros
+  const [periodoSeleccionado, setPeriodoSeleccionado] = useState<string>("");
+  const [departamentoSeleccionado, setDepartamentoSeleccionado] = useState<string>("");
+
+  // 🔹 Cargar periodos
   useEffect(() => {
     const fetchPeriodos = async () => {
       try {
         const pRes = await getPeriodosService();
+        // Ajusta según lo que devuelve tu backend
         const filtrados = (pRes?.data ?? []).filter((p: any) => p.PeriodoEstado === "P");
         setPeriodos(filtrados);
-
       } catch (error) {
         console.error("Error al obtener periodos:", error);
       }
@@ -30,13 +38,37 @@ export default function ReportePage() {
     fetchPeriodos();
   }, []);
 
+  // 🔹 Cargar departamentos
+  useEffect(() => {
+    const fetchDepartamentos = async () => {
+      try {
+        const dRes = await getDepartamentosService();
+        setDepartamentos(dRes?.data ?? []);
+      } catch (error) {
+        console.error("Error al obtener departamentos:", error);
+      }
+    };
+    fetchDepartamentos();
+  }, []);
+
+  // 🔹 Generar reporte por período + departamento (tabla y PDF)
   const handleGenerarReporte = async (PeriodoCodigo: string) => {
     try {
-      const blob = await postReporteNominaPdfService({ PeriodoCodigo });
+      setPeriodoSeleccionado(PeriodoCodigo);
+
+      const filtros = {
+        PeriodoCodigo,
+        DepartamentoCodigo: departamentoSeleccionado || null,
+      };
+
+      // PDF filtrado
+      const blob = await postReporteNominaPdfService(filtros);
       const url = window.URL.createObjectURL(blob);
       setPdfUrl(url);
       toast.success("PDF generado exitosamente");
-      const nomRes = await postListaNominaService({ CodigoPeriodo: PeriodoCodigo });
+
+      // Tabla filtrada
+      const nomRes = await getReporteNominaService(filtros);
       setNominas(nomRes?.data ?? []);
     } catch (error: any) {
       toast.error(error?.message || "Error al generar el reporte");
@@ -59,23 +91,29 @@ export default function ReportePage() {
         <Typography fontSize={20} fontWeight={600} mb={3}>
           Generar Reporte de Nómina
         </Typography>
-        <FormReporte periodo={periodos} onGenerar={handleGenerarReporte} />
+        <FormReporte
+          periodo={periodos}
+          departamento={departamentos}
+          onGenerar={handleGenerarReporte}
+          setDepartamentoFiltro={setDepartamentoSeleccionado}
+        />
       </Paper>
 
-      {nominas.length > 0 && (
+      {/* Tabla */}
+      {periodoSeleccionado && (
         <Paper elevation={2} sx={{ p: 3, mb: 4 }}>
           <Typography fontSize={20} fontWeight={600} mb={3}>
             Reporte por Período
           </Typography>
-          <TableNominaDetail nomina={nominas} />
-
+          {nominas.length > 0 ? (
+            <TableReporteDetail data={nominas} />
+          ) : (
+            <Typography>No hay registros para este filtro.</Typography>
+          )}
         </Paper>
       )}
 
-      <ModalComponent open={openModal} setOpen={setOpenModal} width={580}>
-        <DetalleReporte data={selectedNomina} />
-      </ModalComponent>
-
+      {/* PDF */}
       {pdfUrl && (
         <Paper elevation={2} sx={{ p: 3, mb: 4 }}>
           <Typography fontSize={20} fontWeight={600} mb={3}>
@@ -91,6 +129,7 @@ export default function ReportePage() {
                 window.URL.revokeObjectURL(pdfUrl);
                 setPdfUrl(null);
                 setNominas([]);
+                setPeriodoSeleccionado("");
               }}
               className="bg-gray-300 text-black px-4 py-2 rounded"
             >
