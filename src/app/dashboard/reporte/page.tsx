@@ -1,143 +1,101 @@
 "use client";
-import { useEffect, useState } from "react";
-import {
-  getPeriodosService,
-  getDepartamentosService,
-} from "@/core/services/nomiaService"; // solo para combos
-import {
-  getReporteNominaService,
-  postReporteNominaPdfService,
-} from "@/core/services/reporteService"; // servicios de Reportes
-import { toast } from "react-toastify";
-import { FormReporte } from "./form/FormReporte";
 import TableReporteDetail from "./table/TableReporteDetail";
 import { Paper, Typography } from "@mui/material";
+import { Dropdown } from "@/components/Dropdown";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import { useReporte } from "./hooks/useReporte";
+import RestartAltIcon from '@mui/icons-material/RestartAlt';
 
 export default function ReportePage() {
-  const [periodos, setPeriodos] = useState<any[]>([]);
-  const [departamentos, setDepartamentos] = useState<any[]>([]);
-  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
-  const [nominas, setNominas] = useState<any[]>([]);
 
-  // 🔹 Estado para filtros
-  const [periodoSeleccionado, setPeriodoSeleccionado] = useState<string>("");
-  const [departamentoSeleccionado, setDepartamentoSeleccionado] = useState<string>("");
-
-  // 🔹 Cargar periodos
-  useEffect(() => {
-    const fetchPeriodos = async () => {
-      try {
-        const pRes = await getPeriodosService();
-        // Ajusta según lo que devuelve tu backend
-        const filtrados = (pRes?.data ?? []).filter((p: any) => p.PeriodoEstado === "P");
-        setPeriodos(filtrados);
-      } catch (error) {
-        console.error("Error al obtener periodos:", error);
-      }
-    };
-    fetchPeriodos();
-  }, []);
-
-  // 🔹 Cargar departamentos
-  useEffect(() => {
-    const fetchDepartamentos = async () => {
-      try {
-        const dRes = await getDepartamentosService();
-        setDepartamentos(dRes?.data ?? []);
-      } catch (error) {
-        console.error("Error al obtener departamentos:", error);
-      }
-    };
-    fetchDepartamentos();
-  }, []);
-
-  // 🔹 Generar reporte por período + departamento (tabla y PDF)
-  const handleGenerarReporte = async (PeriodoCodigo: string) => {
-    try {
-      setPeriodoSeleccionado(PeriodoCodigo);
-
-      const filtros = {
-        PeriodoCodigo,
-        DepartamentoCodigo: departamentoSeleccionado || null,
-      };
-
-      // PDF filtrado
-      const blob = await postReporteNominaPdfService(filtros);
-      const url = window.URL.createObjectURL(blob);
-      setPdfUrl(url);
-      toast.success("PDF generado exitosamente");
-
-      // Tabla filtrada
-      const nomRes = await getReporteNominaService(filtros);
-      setNominas(nomRes?.data ?? []);
-    } catch (error: any) {
-      toast.error(error?.message || "Error al generar el reporte");
-    }
-  };
-
-  const handleDescargar = () => {
-    if (!pdfUrl) return;
-    const a = document.createElement("a");
-    a.href = pdfUrl;
-    a.download = `Reporte_Nomina_${new Date().toISOString()}.pdf`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-  };
-
+  const {
+    periodoFiltro,
+    departamentoFiltro,
+    handleChangePeriodo,
+    handleChangeDepartamento,
+    nominas,
+    periodos,
+    departamentos,
+    handleDescargar,
+    handleResetFilters,
+    filtro
+  } = useReporte();
   return (
     <div className="pt-6">
       <Paper elevation={2} sx={{ p: 3, mb: 4 }}>
-        <Typography fontSize={20} fontWeight={600} mb={3}>
-          Generar Reporte de Nómina
+        <Typography fontSize={20} fontWeight={600}>
+          Filtros de Reporte
         </Typography>
-        <FormReporte
-          periodo={periodos}
-          departamento={departamentos}
-          onGenerar={handleGenerarReporte}
-          setDepartamentoFiltro={setDepartamentoSeleccionado}
-        />
-      </Paper>
-
-      {/* Tabla */}
-      {periodoSeleccionado && (
-        <Paper elevation={2} sx={{ p: 3, mb: 4 }}>
-          <Typography fontSize={20} fontWeight={600} mb={3}>
-            Reporte por Período
-          </Typography>
-          {nominas.length > 0 ? (
-            <TableReporteDetail data={nominas} />
-          ) : (
-            <Typography>No hay registros para este filtro.</Typography>
-          )}
-        </Paper>
-      )}
-
-      {/* PDF */}
-      {pdfUrl && (
-        <Paper elevation={2} sx={{ p: 3, mb: 4 }}>
-          <Typography fontSize={20} fontWeight={600} mb={3}>
-            Vista Previa del PDF
-          </Typography>
-          <iframe src={pdfUrl} width="100%" height="600px" />
-          <div className="flex gap-2 mt-3">
-            <button onClick={handleDescargar} className="bg-blue-600 text-white px-4 py-2 rounded">
-              Descargar PDF
-            </button>
+        <div className="flex pb-5 gap-4">
+          <div className="w-[30%] mt-5">
+            <label className="block text-sm font-medium text-gray-700 mb-3">
+              <CalendarMonthIcon
+                style={{
+                  marginRight: 6,
+                  verticalAlign: "middle",
+                  color: "#1976d2",
+                }}
+              />
+              Periodo (Año - Mes)
+            </label>
+            <Dropdown
+              value={periodoFiltro || ""}
+              onChange={handleChangePeriodo}
+              data={periodos.map((p) => ({
+                value: String(p.PeriodoCodigo),
+                label: p.PeriodoDescripcion,
+              }))}
+              placeholder="Seleccionar Periodo"
+              borderRadius="10px"
+              borderColor="#d5d7da"
+            />
+          </div>
+          <div className="w-[30%] mt-5">
+            <label className="block text-sm font-medium text-gray-700 mb-3">
+              Departamento
+            </label>
+            <Dropdown
+              value={departamentoFiltro || ""}
+              onChange={handleChangeDepartamento}
+              data={departamentos.map((d) => ({
+                value: String(d.DepartamentoCodigo),
+                label: d.DepartamentoNombre,
+              }))}
+              placeholder="Filtrar por Departamento"
+              borderRadius="10px"
+              borderColor="#d5d7da"
+            />
+          </div>
+          <div className="flex items-end pb-4">
             <button
-              onClick={() => {
-                window.URL.revokeObjectURL(pdfUrl);
-                setPdfUrl(null);
-                setNominas([]);
-                setPeriodoSeleccionado("");
-              }}
-              className="bg-gray-300 text-black px-4 py-2 rounded"
+              className={filtro ? "text-red-800" : "text-gray-500"}
+              onClick={handleResetFilters}
             >
-              Cerrar Vista
+              <RestartAltIcon />
             </button>
           </div>
-        </Paper>
-      )}
+        </div>
+
+        <Typography fontSize={20} fontWeight={600}>
+          Opciones de descarga
+        </Typography>
+
+        <div className="flex">
+          <div className="w-[20%] mt-5">
+              <button className="bg-green-600 text-white p-2 rounded" onClick={() => handleDescargar()}>Generar Reporte Nómina</button>
+          </div>
+        </div>
+      </Paper>
+      <Paper elevation={2} sx={{ p: 3, mb: 4 }}>
+        <Typography fontSize={20} fontWeight={600} mb={3}>
+          Reporte por Período
+        </Typography>
+        {nominas.length > 0 ? (
+          <TableReporteDetail data={nominas} />
+        ) : (
+          <Typography>No hay registros para este filtro.</Typography>
+        )}
+      </Paper>
     </div>
   );
 }

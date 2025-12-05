@@ -68,7 +68,7 @@ export const postReporteNominaPdfService = async (
       ReporteNominaRequest,
       Blob
     >({
-      url: "/api/reportes/nomina/pdf", // 👈 ruta absoluta
+      url: "/api/reportes/nomina/pdf", 
       method: "post",
       data: requestBody,
       responseType: "blob",
@@ -76,7 +76,6 @@ export const postReporteNominaPdfService = async (
 
     const blob = response.data;
 
-    // 🔎 Si el backend devolvió un error en JSON dentro del blob
     if (blob && blob.type === "application/json") {
       const text = await blob.text();
       try {
@@ -86,8 +85,6 @@ export const postReporteNominaPdfService = async (
         throw new Error("Error al generar PDF.");
       }
     }
-
-    // ✅ PDF válido
     return blob;
   } catch (error: any) {
     const msg =
