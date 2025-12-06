@@ -17,9 +17,11 @@ export default function ReportePage() {
     periodos,
     departamentos,
     handleDescargar,
+    handleDescargarExcel,
     handleResetFilters,
     filtro
   } = useReporte();
+  
   return (
     <div className="pt-6">
       <Paper elevation={2} sx={{ p: 3, mb: 4 }}>
@@ -80,9 +82,23 @@ export default function ReportePage() {
           Opciones de descarga
         </Typography>
 
-        <div className="flex">
+        <div className="flex gap-4"> 
           <div className="w-[20%] mt-5">
-              <button className="bg-green-600 text-white p-2 rounded" onClick={() => handleDescargar()}>Generar Reporte Nómina</button>
+            <button 
+              className="bg-red-600 hover:bg-red-700 text-white p-2 rounded w-full transition-colors" 
+              onClick={handleDescargar}
+            >
+              Exportar PDF
+            </button>
+          </div>
+          
+          <div className="w-[20%] mt-5">
+            <button 
+              className="bg-green-600 hover:bg-green-700 text-white p-2 rounded w-full transition-colors" 
+              onClick={handleDescargarExcel}
+            >
+              Exportar Excel
+            </button>
           </div>
         </div>
       </Paper>

@@ -2,7 +2,11 @@ import {
   getDepartamentosService,
   getPeriodosService,
 } from "@/core/services/nomiaService";
-import { getReporteNominaService, postReporteNominaPdfService } from "@/core/services/reporteService";
+import { 
+  getReporteNominaService, 
+  postReporteNominaPdfService,
+  postReporteNominaExcelService
+} from "@/core/services/reporteService";
 import { downloadBlob } from "@/utils/helpers";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -88,13 +92,36 @@ export const useReporte = () => {
 
       downloadBlob(pdfBlob, `Reporte_Nomina_${new Date().toISOString()}.pdf`);
 
-      toast.success("Reporte descargado correctamente");
+      toast.success("Reporte PDF descargado correctamente");
     } catch (error: any) {
-      toast.error(error.message || "Error al descargar el reporte");
+      toast.error(error.message || "Error al descargar el reporte PDF");
       console.error(error);
     }
   };
-  // // Extraer año y mes del código de periodo
+
+  const handleDescargarExcel = async () => {
+    try {
+      const requestBody = {
+        PeriodoCodigo: periodoFiltro,
+        DepartamentoCodigo: departamentoFiltro || null,
+        CargoCodigo: null,
+        TipoContratoCodigo: null,
+      };
+
+      const excelBlob = await postReporteNominaExcelService(requestBody);
+
+      const nombreArchivo = periodoFiltro 
+        ? `Reporte_Nomina_${periodoFiltro}_${new Date().toISOString().slice(0, 10)}.xlsx`
+        : `Reporte_Nomina_${new Date().toISOString().slice(0, 10)}.xlsx`;
+
+      downloadBlob(excelBlob, nombreArchivo);
+
+      toast.success("Reporte Excel descargado correctamente");
+    } catch (error: any) {
+      toast.error(error.message || "Error al descargar el reporte Excel");
+      console.error(error);
+    }
+  };
 
   return {
     periodoFiltro,
@@ -104,7 +131,8 @@ export const useReporte = () => {
     nominas,
     periodos,
     departamentos,
-    handleDescargar,
+    handleDescargar,       
+    handleDescargarExcel,  
     handleResetFilters,
     filtro
   };

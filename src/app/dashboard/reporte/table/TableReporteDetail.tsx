@@ -7,7 +7,7 @@ import {
 
 interface TableReporteDetailProps {
   data: any[];
-  onSelect?: (row: any) => void; // 👈 callback para seleccionar fila
+  onSelect?: (row: any) => void;
 }
 
 interface Column {
@@ -95,7 +95,7 @@ export default function TableReporteDetail({ data, onSelect }: TableReporteDetai
                 hover
                 tabIndex={-1}
                 key={idx}
-                onClick={() => onSelect?.(data[idx])} // 👈 selecciona fila original
+                onClick={() => onSelect?.(data[idx])} 
                 style={{ cursor: "pointer" }}
               >
                 {columns.map((column) => (
