@@ -92,3 +92,77 @@ export const postReporteNominaPdfService = async (
     throw new Error(msg);
   }
 };
+
+// 🆕 NUEVO: Servicio POST para generar Excel
+export const postReporteNominaExcelService = async (
+  requestBody: ReporteNominaRequest
+): Promise<Blob> => {
+  try {
+    const response: AxiosResponse<Blob> = await customRequest<
+      ReporteNominaRequest,
+      Blob
+    >({
+      url: "/api/reportes/nomina/excel", // 👈 NUEVO endpoint Excel
+      method: "post",
+      data: requestBody,
+      responseType: "blob",
+    });
+
+    const blob = response.data;
+
+    // Verificar si el servidor devolvió un error (pero como blob)
+    if (blob && blob.type === "application/json") {
+      const text = await blob.text();
+      try {
+        const json = JSON.parse(text);
+        throw new Error(json.message || json.error || "Error al generar Excel.");
+      } catch {
+        throw new Error("Error al generar Excel.");
+      }
+    }
+    
+    // Verificar que sea realmente un archivo Excel
+    if (blob && !blob.type.includes("spreadsheet") && !blob.type.includes("excel")) {
+      // Si no es un archivo Excel, intentar leer como error
+      const text = await blob.text();
+      try {
+        const json = JSON.parse(text);
+        throw new Error(json.message || json.error || "Error al generar Excel.");
+      } catch {
+        throw new Error("El servidor no devolvió un archivo Excel válido.");
+      }
+    }
+
+    return blob;
+  } catch (error: any) {
+    // Manejo específico de errores de red o de axios
+    if (error.response) {
+      // El servidor respondió con un error
+      const status = error.response.status;
+      let errorMessage = `Error ${status}: `;
+      
+      if (error.response.data instanceof Blob) {
+        // Si el error viene como blob
+        const text = await error.response.data.text();
+        try {
+          const json = JSON.parse(text);
+          errorMessage += json.message || json.error || "Error del servidor";
+        } catch {
+          errorMessage += "Error al procesar la respuesta del servidor";
+        }
+      } else if (typeof error.response.data === 'string') {
+        errorMessage += error.response.data;
+      } else if (error.response.data?.message) {
+        errorMessage += error.response.data.message;
+      }
+      
+      throw new Error(errorMessage);
+    } else if (error.request) {
+      // La solicitud fue hecha pero no hubo respuesta
+      throw new Error("No se pudo conectar con el servidor. Verifica tu conexión.");
+    } else {
+      // Algo pasó al configurar la solicitud
+      throw new Error(error.message || "Error al configurar la solicitud.");
+    }
+  }
+};

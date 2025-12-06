@@ -2,7 +2,11 @@ import {
   getDepartamentosService,
   getPeriodosService,
 } from "@/core/services/nomiaService";
-import { getReporteNominaService, postReporteNominaPdfService } from "@/core/services/reporteService";
+import { 
+  getReporteNominaService, 
+  postReporteNominaPdfService,
+  postReporteNominaExcelService  // ← NUEVO
+} from "@/core/services/reporteService";
 import { downloadBlob } from "@/utils/helpers";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
@@ -75,6 +79,7 @@ export const useReporte = () => {
     fetchDepartamentos();
   }, []);
 
+  // ✅ Función existente para PDF
   const handleDescargar = async () => {
     try {
       const requestBody = {
@@ -88,13 +93,39 @@ export const useReporte = () => {
 
       downloadBlob(pdfBlob, `Reporte_Nomina_${new Date().toISOString()}.pdf`);
 
-      toast.success("Reporte descargado correctamente");
+      toast.success("Reporte PDF descargado correctamente");
     } catch (error: any) {
-      toast.error(error.message || "Error al descargar el reporte");
+      toast.error(error.message || "Error al descargar el reporte PDF");
       console.error(error);
     }
   };
-  // // Extraer año y mes del código de periodo
+
+  // 🆕 NUEVA función para Excel
+  const handleDescargarExcel = async () => {
+    try {
+      const requestBody = {
+        PeriodoCodigo: periodoFiltro,
+        DepartamentoCodigo: departamentoFiltro || null,
+        CargoCodigo: null,
+        TipoContratoCodigo: null,
+      };
+
+      // Llamar al nuevo servicio de Excel
+      const excelBlob = await postReporteNominaExcelService(requestBody);
+
+      // Generar nombre de archivo con período si está disponible
+      const nombreArchivo = periodoFiltro 
+        ? `Reporte_Nomina_${periodoFiltro}_${new Date().toISOString().slice(0, 10)}.xlsx`
+        : `Reporte_Nomina_${new Date().toISOString().slice(0, 10)}.xlsx`;
+
+      downloadBlob(excelBlob, nombreArchivo);
+
+      toast.success("Reporte Excel descargado correctamente");
+    } catch (error: any) {
+      toast.error(error.message || "Error al descargar el reporte Excel");
+      console.error(error);
+    }
+  };
 
   return {
     periodoFiltro,
@@ -104,7 +135,8 @@ export const useReporte = () => {
     nominas,
     periodos,
     departamentos,
-    handleDescargar,
+    handleDescargar,       // Para PDF
+    handleDescargarExcel,  // 🆕 Para Excel
     handleResetFilters,
     filtro
   };

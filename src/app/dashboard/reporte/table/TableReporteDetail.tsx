@@ -7,7 +7,7 @@ import {
 
 interface TableReporteDetailProps {
   data: any[];
-  onSelect?: (row: any) => void; // 👈 callback para seleccionar fila
+  onSelect?: (row: any) => void;
 }
 
 interface Column {
