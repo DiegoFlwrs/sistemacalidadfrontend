@@ -17,7 +17,7 @@ export default function ReportePage() {
     periodos,
     departamentos,
     handleDescargar,
-    handleDescargarExcel, // 🆕 NUEVO
+    handleDescargarExcel,
     handleResetFilters,
     filtro
   } = useReporte();
@@ -82,7 +82,7 @@ export default function ReportePage() {
           Opciones de descarga
         </Typography>
 
-        <div className="flex gap-4"> {/* Agregado gap-4 para separación */}
+        <div className="flex gap-4"> 
           <div className="w-[20%] mt-5">
             <button 
               className="bg-red-600 hover:bg-red-700 text-white p-2 rounded w-full transition-colors" 
@@ -92,7 +92,6 @@ export default function ReportePage() {
             </button>
           </div>
           
-          {/* 🆕 NUEVO: Botón para Excel con mismo estilo */}
           <div className="w-[20%] mt-5">
             <button 
               className="bg-green-600 hover:bg-green-700 text-white p-2 rounded w-full transition-colors" 

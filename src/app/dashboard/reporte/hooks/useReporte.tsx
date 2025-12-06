@@ -5,7 +5,7 @@ import {
 import { 
   getReporteNominaService, 
   postReporteNominaPdfService,
-  postReporteNominaExcelService  // ← NUEVO
+  postReporteNominaExcelService
 } from "@/core/services/reporteService";
 import { downloadBlob } from "@/utils/helpers";
 import { useEffect, useState } from "react";
@@ -79,7 +79,6 @@ export const useReporte = () => {
     fetchDepartamentos();
   }, []);
 
-  // ✅ Función existente para PDF
   const handleDescargar = async () => {
     try {
       const requestBody = {
@@ -100,7 +99,6 @@ export const useReporte = () => {
     }
   };
 
-  // 🆕 NUEVA función para Excel
   const handleDescargarExcel = async () => {
     try {
       const requestBody = {
@@ -110,10 +108,8 @@ export const useReporte = () => {
         TipoContratoCodigo: null,
       };
 
-      // Llamar al nuevo servicio de Excel
       const excelBlob = await postReporteNominaExcelService(requestBody);
 
-      // Generar nombre de archivo con período si está disponible
       const nombreArchivo = periodoFiltro 
         ? `Reporte_Nomina_${periodoFiltro}_${new Date().toISOString().slice(0, 10)}.xlsx`
         : `Reporte_Nomina_${new Date().toISOString().slice(0, 10)}.xlsx`;
@@ -135,8 +131,8 @@ export const useReporte = () => {
     nominas,
     periodos,
     departamentos,
-    handleDescargar,       // Para PDF
-    handleDescargarExcel,  // 🆕 Para Excel
+    handleDescargar,       
+    handleDescargarExcel,  
     handleResetFilters,
     filtro
   };
